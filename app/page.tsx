@@ -308,12 +308,11 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero">
         <div className="hero-pattern" />
-        <div className="hero-inner">
-          <div className="hero-content">
-            <div className="hero-badge">🏆 Bay Area&apos;s Trusted Lawn Pros</div>
+        <div className="hero-inner" style={{ gridTemplateColumns: '1fr', textAlign: 'center', maxWidth: 800 }}>
+          <div className="hero-content" style={{ maxWidth: '100%' }}>
             <h1>Your Yard Deserves Better.<br /><span className="highlight">We Make It Happen.</span></h1>
-            <p>Stop stressing over an overgrown lawn or that pile of junk you&apos;ve been meaning to deal with for months. JB Lawn Care &amp; Hauling handles it all — so you get your weekends back and a property you&apos;re proud of.</p>
-            <div className="hero-actions">
+            <p style={{ maxWidth: 600, margin: '0 auto 36px' }}>Stop stressing over an overgrown lawn or that pile of junk you&apos;ve been meaning to deal with for months. JB Lawn Care &amp; Hauling handles it all — so you get your weekends back and a property you&apos;re proud of.</p>
+            <div className="hero-actions" style={{ justifyContent: 'center' }}>
               <a href="#" className="btn-primary" onClick={(e) => { e.preventDefault(); setModalOpen(true) }}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 Get Your Free Estimate
@@ -323,7 +322,7 @@ export default function HomePage() {
                 Call Now
               </a>
             </div>
-            <div className="hero-stats">
+            <div className="hero-stats" style={{ justifyContent: 'center' }}>
               <div>
                 <div className="hero-stat-value">500+</div>
                 <div className="hero-stat-label">Properties Serviced</div>
@@ -338,38 +337,38 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="hero-image">
-            <div style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-              <img src="/images/gallery/front-yard-sod-after.jpg" alt="Fresh sod installation - JB Lawn Care" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-            <div className="hero-float-card">
-              <div className="hero-float-icon">
-                <svg width="24" height="24" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              </div>
-              <div className="hero-float-text">
-                <strong>Fully Insured</strong>
-                <span>Licensed &amp; ready to work</span>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Trust Bar */}
       <div className="trust-bar">
         <div className="trust-bar-inner">
-          {[
-            { label: 'Fully Insured', icon: <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-            { label: 'On-Time, Every Time', icon: <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
-            { label: 'Free Estimates', icon: <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
-            { label: 'Locally Owned', icon: <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> },
-            { label: '100+ Five-Star Reviews', icon: <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> },
-          ].map((item) => (
-            <div key={item.label} className="trust-item">
-              <div className="trust-icon">{item.icon}</div>
-              {item.label}
+          <div className="trust-item">
+            <div className="trust-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-          ))}
+            Fully Insured
+          </div>
+          <div className="trust-item">
+            <div className="trust-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            On-Time, Every Time
+          </div>
+          <div className="trust-item">
+            <div className="trust-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            Free Estimates
+          </div>
+          <div className="trust-item" style={{ gap: 16 }}>
+            <img src="/images/google-logo.png" alt="Google" style={{ height: 28 }} />
+            <img src="/images/yelp-logo.png" alt="Yelp" style={{ height: 28 }} />
+            <img src="/images/thumbtack-logo.png" alt="Thumbtack" style={{ height: 28 }} />
+          </div>
+          <a href="#" className="trust-review-btn" onClick={(e) => e.preventDefault()}>
+            ★ Leave a Review
+          </a>
         </div>
       </div>
 
@@ -400,7 +399,7 @@ export default function HomePage() {
           <div className="why-grid">
             <div className="why-image fade-in">
               <div style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-                <img src="/images/gallery/overgrown-backyard-before.jpg" alt="Before - overgrown yard" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="/images/gallery/front-yard-sod-after.jpg" alt="Fresh lawn installation by JB Lawn Care" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             </div>
             <div className="fade-in">
@@ -460,14 +459,6 @@ export default function HomePage() {
             <div className="section-label">Our Work</div>
             <h2 className="section-title">See the Difference for Yourself</h2>
             <p className="section-subtitle">Before and after transformations from real jobs across the Bay Area. Every project, big or small, gets the same level of attention.</p>
-          </div>
-
-          {/* Dump Trailer Standalone */}
-          <div className="gallery-standalone fade-in" style={{ marginBottom: 28 }}>
-            <img src="/images/gallery/dump-trailer.jpg" alt="JB Lawn Care 10-yard dump trailer" />
-            <div className="gallery-standalone-overlay">
-              <h4>🚛 Our 10-Yard Dump Trailer — Available for Rent</h4>
-            </div>
           </div>
 
           <div className="gallery-grid">
