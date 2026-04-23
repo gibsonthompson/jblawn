@@ -178,7 +178,7 @@ export default function AdminHome() {
 
       // --- ACTIVITY FEED ---
       const feed: Activity[] = []
-      function timeAgo(d: string) {
+      const timeAgo = (d: string) => {
         const diff = Date.now() - new Date(d).getTime()
         const mins = Math.floor(diff / 60000)
         if (mins < 60) return `${mins}m ago`
