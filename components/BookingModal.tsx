@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '../lib/supabase'
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const DAYS_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
@@ -84,6 +84,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
     setSubmitting(true)
 
     try {
+      if (!supabase) throw new Error('Supabase not connected')
       const { error } = await supabase.from('jb_leads').insert({
         first_name: fname,
         last_name: lname || null,

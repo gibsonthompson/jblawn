@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import BookingModal from '@/components/BookingModal'
-import { BookingProvider, useBooking } from '@/components/BookingContext'
+import BookingModal from '../../components/BookingModal'
+import { BookingProvider, useBooking } from '../../components/BookingContext'
 
 function PublicLayoutInner({ children }: { children: React.ReactNode }) {
   const { openBooking, closeBooking, isOpen } = useBooking()
