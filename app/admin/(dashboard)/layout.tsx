@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!db) return
 
     const fetchCount = async () => {
-      const { data } = await db!.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
+      const { data } = await db.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
       setNewLeadCount(data?.length || 0)
     }
 
@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       })
       .subscribe()
 
-    return () => { db!.removeChannel(channel) }
+    return () => { db.removeChannel(channel) }
   }, [])
 
   // Close create menu on outside click
@@ -60,16 +60,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => document.removeEventListener('click', handler)
   }, [])
 
-  // Clear badge visual when viewing leads page (leads are still "new" until status changes)
-  const leadsViewed = pathname.startsWith('/admin/leads')
-
   const NAV = [
     { section: null, items: [
       { label: 'Home', href: '/admin', icon: I.home },
     ]},
     { section: 'Work', items: [
       { label: 'Schedule', href: '/admin/schedule', icon: I.calendar },
-      { label: 'Requests', href: '/admin/leads', icon: I.inbox, badge: leadsViewed ? 0 : newLeadCount },
+      { label: 'Requests', href: '/admin/leads', icon: I.inbox, badge: newLeadCount },
       { label: 'Quotes', href: '/admin/quotes', icon: I.fileText },
       { label: 'Jobs', href: '/admin/jobs', icon: I.briefcase },
     ]},
