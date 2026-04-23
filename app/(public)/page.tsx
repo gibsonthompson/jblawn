@@ -520,7 +520,7 @@ export default function HomePage() {
           <div className="blog-grid fade-in">
             {BLOG_POSTS.map((post) => (
               <Link key={post.href} href={post.href} className="blog-card">
-                <div className="blog-thumb">📷 Blog Image</div>
+                <div className="blog-thumb">{post.category}</div>
                 <div className="blog-body">
                   <div className="blog-category">{post.category}</div>
                   <h3>{post.title}</h3>
