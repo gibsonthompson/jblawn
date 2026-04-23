@@ -9,8 +9,8 @@ const jakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'JB Lawn Care & Hauling | Bay Area\'s Trusted Lawn & Property Experts',
-  description: 'JB Lawn Care & Hauling serves the Bay Area with professional lawn maintenance, landscaping, junk hauling, and property cleanups. Call 341-260-0331 for a free estimate.',
+  title: 'JB Lawn Care & Hauling | Junk Removal, Lawn Mowing & Yard Cleanup in the Bay Area',
+  description: 'JB Lawn Care & Hauling provides affordable junk removal, lawn mowing, landscaping, yard cleanup, and dump trailer rental across Oakland, Hayward, Fremont, and the greater Bay Area. Same-day estimates. Call 341-260-0331.',
 }
 
 export default function RootLayout({

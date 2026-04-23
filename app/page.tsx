@@ -11,25 +11,25 @@ const SERVICES = [
   {
     title: 'Lawn Mowing & Maintenance',
     href: '/services/lawn-mowing',
-    description: 'Consistent, professional cuts that keep your lawn thick, green, and healthy all season long. Weekly, bi-weekly, or one-time service available.',
+    description: 'Professional lawn mowing for residential and commercial properties. Weekly, bi-weekly, or one-time cuts including edging, trimming, and blowing. Serving Oakland, Berkeley, Hayward, and surrounding cities.',
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
   },
   {
-    title: 'Landscaping & Design',
+    title: 'Landscaping & Sod Installation',
     href: '/services/landscaping',
-    description: 'Transform your outdoor space into something worth showing off. From fresh sod and flower beds to full landscape redesigns — we bring the vision to life.',
+    description: 'Complete landscape transformations — sod installation, flower beds, hardscaping, and drainage grading. We take Bay Area yards from neglected to neighborhood standout.',
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0020 0h-3"/><path d="M5.24 17a5 5 0 01-.24-1.5C5 12.46 8.13 10 12 10s7 2.46 7 5.5a5 5 0 01-.24 1.5"/></svg>,
   },
   {
-    title: 'Junk Hauling & Removal',
+    title: 'Junk Removal & Hauling',
     href: '/services/junk-hauling',
-    description: "Furniture, appliances, construction debris, yard waste — you name it, we haul it. Fast, affordable removal so you don't have to rent a dumpster or borrow a truck.",
+    description: "Same-day junk removal across the East Bay. Old furniture, appliances, construction debris, yard waste — we load it, haul it, and dispose of it. Often cheaper than renting a dumpster.",
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>,
   },
   {
     title: 'Yard Cleanup & Debris Removal',
     href: '/services/yard-cleanup',
-    description: "Overgrown lot? Storm damage? Moving in or out? We'll clear it all — brush, leaves, branches, and anything else that's been piling up.",
+    description: "Overgrown lot, storm damage, or pre-sale property prep — we clear brush, weeds, branches, and debris so your outdoor space is usable again. Residential and commercial properties.",
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 6l3 1 2-3"/><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
   },
   {
@@ -82,20 +82,20 @@ const BLOG_POSTS = [
   {
     href: '/blog/how-often-should-you-mow',
     category: 'Lawn Care',
-    title: 'How Often Should You Really Be Mowing Your Lawn?',
-    excerpt: "The answer depends on your grass type, the season, and the look you're going for. Here's what most Bay Area homeowners get wrong.",
+    title: 'How Often Should You Mow Your Lawn in the Bay Area?',
+    excerpt: "Bay Area grass grows year-round thanks to the mild climate. Here's a seasonal mowing schedule that keeps your lawn healthy without overdoing it.",
   },
   {
     href: '/blog/junk-removal-vs-dumpster',
-    category: 'Hauling',
-    title: 'Junk Removal vs. Renting a Dumpster: Which Saves You More?',
-    excerpt: "Spoiler: hiring a crew is often cheaper than renting a dumpster when you factor in time, labor, and disposal fees.",
+    category: 'Junk Removal',
+    title: 'Junk Removal vs. Dumpster Rental: Which Is Cheaper in 2026?',
+    excerpt: "When you factor in rental fees, permits, disposal costs, and your own labor, hiring a junk removal crew is usually the better deal. Here's the math.",
   },
   {
     href: '/blog/spring-yard-checklist',
-    category: 'Seasonal',
-    title: 'The Ultimate Spring Yard Cleanup Checklist',
-    excerpt: 'Everything you need to tackle — or delegate — to get your yard ready for the warmer months ahead.',
+    category: 'Yard Cleanup',
+    title: 'Spring Yard Cleanup Checklist for Bay Area Homeowners',
+    excerpt: 'The complete list of everything your yard needs after winter — from debris clearing and aeration to mulching and pre-emergent weed control.',
   },
 ]
 
@@ -233,9 +233,25 @@ export default function HomePage() {
 
   return (
     <>
+      {/* FAQ Schema for AEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "How much does junk removal cost in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Most junk removal jobs in Oakland, Hayward, and the East Bay range from $150 to $500 depending on volume. JB Lawn Care & Hauling provides free, no-obligation estimates before any work begins." }},
+            { "@type": "Question", "name": "Do you offer same-day junk removal?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care & Hauling offers same-day junk hauling and removal for most Bay Area locations when scheduled before noon. Call 341-260-0331 or book online." }},
+            { "@type": "Question", "name": "How often should I have my lawn mowed in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "In the Bay Area's mild climate, most lawns need weekly mowing from March through October and bi-weekly service during the cooler months." }},
+            { "@type": "Question", "name": "What areas does JB Lawn Care serve?", "acceptedAnswer": { "@type": "Answer", "text": "JB Lawn Care & Hauling serves Oakland, Berkeley, Richmond, Hayward, Fremont, San Leandro, Concord, Walnut Creek, Pleasanton, Dublin, and the greater Bay Area." }},
+            { "@type": "Question", "name": "Is it cheaper to hire a junk removal company or rent a dumpster?", "acceptedAnswer": { "@type": "Answer", "text": "In most cases, hiring a junk removal crew is cheaper when you factor in dumpster rental fees, permits, disposal costs, and labor." }},
+            { "@type": "Question", "name": "Can I rent a dump trailer in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers a 10-yard dump trailer for $150/day for DIY projects, or $400 for full-service including drop-off, pickup, and up to 1 ton of disposal. Available from Hayward to Vallejo." }},
+          ]
+        })}}
+      />
       {/* Announcement Bar */}
       <div className="announcement-bar">
-        🌿 Spring cleanups &amp; hauling — slots filling fast!{' '}
+        🌿 Now booking lawn care &amp; junk removal across Oakland, Hayward &amp; the East Bay!{' '}
         <a href="#" onClick={(e) => { e.preventDefault(); setModalOpen(true) }}>
           Book your free estimate today →
         </a>
@@ -254,7 +270,7 @@ export default function HomePage() {
               <div className="dropdown-menu">
                 <Link href="/services/lawn-mowing">Lawn Mowing &amp; Maintenance</Link>
                 <Link href="/services/landscaping">Landscaping &amp; Design</Link>
-                <Link href="/services/junk-hauling">Junk Hauling &amp; Removal</Link>
+                <Link href="/services/junk-hauling">Junk Removal &amp; Hauling</Link>
                 <Link href="/services/yard-cleanup">Yard Cleanup &amp; Debris</Link>
                 <Link href="/services/bush-trimming">Bush &amp; Hedge Trimming</Link>
                 <Link href="/services/mulching">Mulching &amp; Bed Care</Link>
@@ -293,7 +309,7 @@ export default function HomePage() {
         <Link href="/" onClick={() => setMobileNavOpen(false)}>Home</Link>
         <Link href="/services/lawn-mowing" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Lawn Mowing &amp; Maintenance</Link>
         <Link href="/services/landscaping" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Landscaping &amp; Design</Link>
-        <Link href="/services/junk-hauling" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Junk Hauling &amp; Removal</Link>
+        <Link href="/services/junk-hauling" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Junk Removal &amp; Hauling</Link>
         <Link href="/services/yard-cleanup" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Yard Cleanup &amp; Debris</Link>
         <Link href="/services/bush-trimming" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Bush &amp; Hedge Trimming</Link>
         <Link href="/services/mulching" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Mulching &amp; Bed Care</Link>
@@ -310,8 +326,8 @@ export default function HomePage() {
         <div className="hero-pattern" />
         <div className="hero-inner" style={{ gridTemplateColumns: '1fr', textAlign: 'center', maxWidth: 800 }}>
           <div className="hero-content" style={{ maxWidth: '100%' }}>
-            <h1>Your Yard Deserves Better.<br /><span className="highlight">We Make It Happen.</span></h1>
-            <p style={{ maxWidth: 600, margin: '0 auto 36px' }}>Stop stressing over an overgrown lawn or that pile of junk you&apos;ve been meaning to deal with for months. JB Lawn Care &amp; Hauling handles it all — so you get your weekends back and a property you&apos;re proud of.</p>
+            <h1>Bay Area Lawn Care,<br />Junk Removal &amp;<br /><span className="highlight">Hauling Done Right.</span></h1>
+            <p style={{ maxWidth: 600, margin: '0 auto 36px' }}>Tired of looking at that overgrown yard or garage full of junk? JB Lawn Care &amp; Hauling provides fast, affordable lawn mowing, junk hauling, yard cleanups, and landscaping services across Oakland, Hayward, Fremont, and the entire East Bay. Same-day estimates — just call or book online.</p>
             <div className="hero-actions" style={{ justifyContent: 'center' }}>
               <a href="#" className="btn-primary" onClick={(e) => { e.preventDefault(); setModalOpen(true) }}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -376,9 +392,9 @@ export default function HomePage() {
       <section className="section services" id="services">
         <div className="container">
           <div className="section-header center fade-in">
-            <div className="section-label">What We Do</div>
-            <h2 className="section-title">Lawn Care, Landscaping &amp; Hauling<br />— All Under One Roof</h2>
-            <p className="section-subtitle">Whether it&apos;s weekly mowing or a full property cleanout, our crew shows up on time, does the job right, and leaves your property looking better than we found it.</p>
+            <div className="section-label">Our Services</div>
+            <h2 className="section-title">Lawn Mowing, Junk Removal &amp;<br />Full Property Cleanups</h2>
+            <p className="section-subtitle">From weekly lawn maintenance to same-day junk hauling, we handle every outdoor job Bay Area homeowners and property managers need done. No subcontractors — our crew does it all.</p>
           </div>
           <div className="services-grid">
             {SERVICES.map((s) => (
@@ -403,9 +419,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="fade-in">
-              <div className="section-label">Why JB</div>
-              <h2 className="section-title">We Treat Your Property<br />Like It&apos;s Our Own</h2>
-              <p className="section-subtitle" style={{ marginBottom: 36 }}>You shouldn&apos;t have to chase down your lawn guy or wonder if the job actually got done. Here&apos;s how we do things differently.</p>
+              <div className="section-label">Why Choose JB</div>
+              <h2 className="section-title">The Bay Area&apos;s Most Reliable<br />Lawn &amp; Hauling Crew</h2>
+              <p className="section-subtitle" style={{ marginBottom: 36 }}>Most lawn care companies and junk haulers in Oakland and the East Bay are unreliable. We built our reputation by doing the opposite — showing up, communicating, and doing the job right the first time.</p>
               <div className="why-points">
                 {[
                   { title: 'We Show Up When We Say We Will', desc: "No guessing games. You'll get a confirmed time window and a heads-up when we're on the way. If something changes, we communicate — always.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
@@ -517,9 +533,9 @@ export default function HomePage() {
       <section className="section areas" id="areas">
         <div className="container">
           <div className="section-header center fade-in">
-            <div className="section-label">Service Areas</div>
-            <h2 className="section-title">Proudly Serving the Bay Area</h2>
-            <p className="section-subtitle">From Oakland to Fremont, we cover the East Bay and beyond. Don&apos;t see your city? Give us a call — we probably service your area too.</p>
+            <div className="section-label">Where We Work</div>
+            <h2 className="section-title">Lawn Care &amp; Junk Removal<br />Across the Bay Area</h2>
+            <p className="section-subtitle">We provide lawn mowing, junk hauling, landscaping, and yard cleanup services throughout Oakland, the East Bay, and surrounding communities. Don&apos;t see your city? Call us — we probably cover your area.</p>
           </div>
           <div className="areas-grid fade-in">
             {SERVICE_AREAS.map((area) => (
@@ -571,21 +587,84 @@ export default function HomePage() {
 
       {/* CTA Banner */}
       <section className="cta-banner">
-        <h2>Ready to Take Your Property<br />to the Next Level?</h2>
-        <p>Whether it&apos;s a one-time cleanup or ongoing maintenance, we&apos;ve got you covered. Get a free estimate in minutes — no pressure, no obligation.</p>
+        <h2>Need Lawn Care or Junk Removal<br />in the Bay Area?</h2>
+        <p>Get a free, no-obligation estimate for any lawn, landscaping, or hauling job. Most quotes are returned within the hour — same-day service available.</p>
         <button className="btn-white" onClick={() => setModalOpen(true)}>
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Book Your Free Estimate
         </button>
       </section>
 
+      {/* FAQ Section — AEO Optimized */}
+      <section className="section" style={{ background: 'var(--white)' }}>
+        <div className="container">
+          <div className="section-header center fade-in">
+            <div className="section-label">FAQ</div>
+            <h2 className="section-title">Common Questions About Our Services</h2>
+          </div>
+          <div className="fade-in" style={{ maxWidth: 720, margin: '0 auto' }}>
+            {[
+              {
+                q: 'How much does junk removal cost in the Bay Area?',
+                a: 'Most junk removal jobs in Oakland, Hayward, and the East Bay range from $150 to $500 depending on volume. We provide free, no-obligation estimates before any work begins — you\'ll know the exact price upfront with no hidden fees.',
+              },
+              {
+                q: 'Do you offer same-day junk removal?',
+                a: 'Yes. We offer same-day junk hauling and removal for most Bay Area locations when scheduled before noon. Call 341-260-0331 or book online for availability.',
+              },
+              {
+                q: 'How often should I have my lawn mowed?',
+                a: 'In the Bay Area\'s mild climate, most lawns need weekly mowing from March through October and bi-weekly service during the cooler months. We offer flexible scheduling — weekly, bi-weekly, or one-time service.',
+              },
+              {
+                q: 'What areas do you serve?',
+                a: 'We provide lawn care, junk removal, landscaping, and hauling services across Oakland, Berkeley, Richmond, Hayward, Fremont, San Leandro, Concord, Walnut Creek, Pleasanton, Dublin, and the greater Bay Area.',
+              },
+              {
+                q: 'Is it cheaper to hire a junk removal company or rent a dumpster?',
+                a: 'In most cases, hiring a junk removal crew is cheaper when you factor in dumpster rental fees, permits, disposal costs, and your own labor. Our crew handles all the heavy lifting and disposal — you don\'t have to do anything.',
+              },
+              {
+                q: 'Can I rent a dump trailer instead?',
+                a: 'Yes. We offer a 10-yard dump trailer for rent at $150/day for DIY projects, or $400 for full-service (drop-off, pickup, and up to 1 ton of disposal included). Available from Hayward to Vallejo.',
+              },
+            ].map((faq, i) => (
+              <details key={i} style={{
+                borderBottom: '1px solid var(--gray-light)',
+                padding: '20px 0',
+              }}>
+                <summary style={{
+                  fontWeight: 700,
+                  fontSize: '1.02rem',
+                  cursor: 'pointer',
+                  color: 'var(--black)',
+                  listStyle: 'none',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  {faq.q}
+                  <span style={{ color: 'var(--green-mid)', fontSize: '1.2rem', flexShrink: 0, marginLeft: 16 }}>+</span>
+                </summary>
+                <p style={{
+                  marginTop: 12,
+                  fontSize: '0.95rem',
+                  color: 'var(--gray-mid)',
+                  lineHeight: 1.7,
+                }}>{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Blog Preview */}
       <section className="section blog-preview">
         <div className="container">
           <div className="section-header center fade-in">
-            <div className="section-label">From the Blog</div>
-            <h2 className="section-title">Tips, Guides &amp; Lawn Care Advice</h2>
-            <p className="section-subtitle">Practical info from our team to help you get the most out of your outdoor spaces.</p>
+            <div className="section-label">Resources</div>
+            <h2 className="section-title">Lawn Care Tips &amp; Hauling Guides</h2>
+            <p className="section-subtitle">Practical advice from our crew to help Bay Area homeowners maintain their properties and make smarter decisions about outdoor services.</p>
           </div>
           <div className="blog-grid fade-in">
             {BLOG_POSTS.map((post) => (
@@ -610,7 +689,7 @@ export default function HomePage() {
         <div className="footer-grid">
           <div className="footer-brand">
             <img src="/images/jb-logo.jpg" alt="JB Lawn Care & Hauling" />
-            <p>Locally owned and operated in the Bay Area. Professional lawn care, landscaping, and hauling services you can count on — rain or shine.</p>
+            <p>Professional lawn care, junk removal, landscaping, and hauling services for residential and commercial properties across Oakland, Hayward, Fremont, and the greater Bay Area.</p>
             <div className="footer-social">
               <a href="#" aria-label="Facebook"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
               <a href="#" aria-label="Instagram"><svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
@@ -622,7 +701,7 @@ export default function HomePage() {
             <ul>
               <li><Link href="/services/lawn-mowing">Lawn Mowing</Link></li>
               <li><Link href="/services/landscaping">Landscaping</Link></li>
-              <li><Link href="/services/junk-hauling">Junk Hauling</Link></li>
+              <li><Link href="/services/junk-hauling">Junk Removal</Link></li>
               <li><Link href="/services/yard-cleanup">Yard Cleanup</Link></li>
               <li><Link href="/services/bush-trimming">Bush Trimming</Link></li>
               <li><Link href="/services/mulching">Mulching</Link></li>
