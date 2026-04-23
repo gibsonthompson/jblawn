@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
       // 3. Queue customer SMS for delayed send (1 min)
       await supabase.from('jb_sms_log').insert({
-        to_number: cleanPhone,
+        phone: cleanPhone,
         message: `Thanks ${first_name}! We got your request for ${service_requested}. We'll call you within the hour to confirm your appointment. — JB Lawn Care & Hauling`,
         direction: 'outbound',
         status: 'queued',
