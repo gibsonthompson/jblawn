@@ -26,6 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [newLeadCount, setNewLeadCount] = useState(0)
+  const [createOpen, setCreateOpen] = useState(false)
 
   const isActive = (href: string) => href === '/admin' ? pathname === '/admin' : pathname.startsWith(href)
 
@@ -34,20 +35,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!db) return
 
     const fetchCount = async () => {
-      const { data } = await db!.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
+      const { data } = await db.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
       setNewLeadCount(data?.length || 0)
     }
 
     fetchCount()
 
-    const channel = db!
+    const channel = db
       .channel('admin_lead_badge')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jb_leads' }, () => {
         fetchCount()
       })
       .subscribe()
 
-    return () => { db!.removeChannel(channel) }
+    return () => { db.removeChannel(channel) }
+  }, [])
+
+  // Close create menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('.create-menu-wrap')) setCreateOpen(false)
+    }
+    document.addEventListener('click', handler)
+    return () => document.removeEventListener('click', handler)
   }, [])
 
   // Clear badge visual when viewing leads page (leads are still "new" until status changes)
@@ -118,10 +128,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
           </div>
           <div className="topbar-right">
-            <button className="topbar-btn">
-              <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Create
-            </button>
+            <div className="create-menu-wrap" style={{ position: 'relative' }}>
+              <button className="topbar-btn" onClick={() => setCreateOpen(!createOpen)}>
+                <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create
+              </button>
+              {createOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 8,
+                  background: '#fff', borderRadius: 10, border: '1px solid #E5E8E0',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: 200, padding: '6px 0', zIndex: 100,
+                }}>
+                  {[
+                    { label: 'Add Client', href: '/admin/contacts' },
+                    { label: 'Create Job', href: '/admin/jobs' },
+                    { label: 'Create Quote', href: '/admin/quotes' },
+                    { label: 'Create Invoice', href: '/admin/invoices' },
+                  ].map(item => (
+                    <Link key={item.label} href={item.href} onClick={() => setCreateOpen(false)} style={{
+                      display: 'block', padding: '10px 18px', fontSize: 13, fontWeight: 600,
+                      color: '#3A3F35', textDecoration: 'none', transition: 'background 0.1s',
+                    }} onMouseEnter={e => (e.target as HTMLElement).style.background = '#F5F6F2'}
+                       onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}>
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="topbar-icon-btn" title="Notifications">
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
               {newLeadCount > 0 && <span className="topbar-dot" />}
