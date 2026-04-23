@@ -208,9 +208,6 @@ export default function HomePage() {
             <img src="/images/yelp-logo.png" alt="Yelp" style={{ height: 28 }} />
             <img src="/images/thumbtack-logo.png" alt="Thumbtack" style={{ height: 28 }} />
           </div>
-          <a href="#" className="trust-review-btn" onClick={(e) => e.preventDefault()}>
-            ★ Leave a Review
-          </a>
         </div>
       </div>
 
