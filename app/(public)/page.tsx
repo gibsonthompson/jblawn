@@ -1,8 +1,16 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useBooking } from '../../components/BookingContext'
+import { db } from '../../lib/admin-db'
+
+type Review = {
+  reviewer_name: string | null
+  reviewer_location: string | null
+  rating: number | null
+  review_text: string | null
+}
 
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
@@ -79,19 +87,19 @@ const TESTIMONIALS = [
 
 const BLOG_POSTS = [
   {
-    href: '/blog/how-often-should-you-mow',
+    href: '/blog/how-often-should-you-mow-your-lawn-bay-area',
     category: 'Lawn Care',
     title: 'How Often Should You Mow Your Lawn in the Bay Area?',
     excerpt: "Bay Area grass grows year-round thanks to the mild climate. Here's a seasonal mowing schedule that keeps your lawn healthy without overdoing it.",
   },
   {
-    href: '/blog/junk-removal-vs-dumpster',
+    href: '/blog/junk-removal-vs-dumpster-rental-cost-comparison',
     category: 'Junk Removal',
     title: 'Junk Removal vs. Dumpster Rental: Which Is Cheaper in 2026?',
     excerpt: "When you factor in rental fees, permits, disposal costs, and your own labor, hiring a junk removal crew is usually the better deal. Here's the math.",
   },
   {
-    href: '/blog/spring-yard-checklist',
+    href: '/blog/spring-yard-cleanup-checklist-bay-area',
     category: 'Yard Cleanup',
     title: 'Spring Yard Cleanup Checklist for Bay Area Homeowners',
     excerpt: 'The complete list of everything your yard needs after winter — from debris clearing and aeration to mulching and pre-emergent weed control.',
@@ -119,6 +127,21 @@ const PIN_ICON = (
 
 export default function HomePage() {
   const { openBooking } = useBooking()
+  const [reviews, setReviews] = useState<Review[]>([])
+
+  useEffect(() => {
+    // Fetch published reviews from Supabase
+    if (db) {
+      db.from('jb_reviews')
+        .select('reviewer_name, reviewer_location, rating, review_text')
+        .eq('review_left', true)
+        .order('created_at', { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          if (data && data.length > 0) setReviews(data as Review[])
+        })
+    }
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -335,19 +358,24 @@ export default function HomePage() {
             <p className="section-subtitle">Don&apos;t just take our word for it — hear from homeowners and property managers across the Bay Area.</p>
           </div>
           <div className="testimonials-grid fade-in">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="testimonial-card">
-                <div className="testimonial-stars">★★★★★</div>
-                <blockquote>&ldquo;{t.text}&rdquo;</blockquote>
-                <div className="testimonial-author">
-                  <div className="testimonial-avatar">{t.initials}</div>
-                  <div>
-                    <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-loc">{t.location}</div>
+            {(reviews.length > 0 ? reviews : TESTIMONIALS.map(t => ({ reviewer_name: t.name, reviewer_location: t.location, rating: 5, review_text: t.text }))).map((t, i) => {
+              const name = t.reviewer_name || 'Customer'
+              const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+              const stars = '★'.repeat(t.rating || 5)
+              return (
+                <div key={i} className="testimonial-card">
+                  <div className="testimonial-stars">{stars}</div>
+                  <blockquote>&ldquo;{t.review_text}&rdquo;</blockquote>
+                  <div className="testimonial-author">
+                    <div className="testimonial-avatar">{initials}</div>
+                    <div>
+                      <div className="testimonial-name">{name}</div>
+                      {t.reviewer_location && <div className="testimonial-loc">{t.reviewer_location}</div>}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
