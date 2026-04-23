@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { db } from '../../../lib/admin-db'
 import './admin.css'
 
 const I = {
@@ -21,36 +22,61 @@ const I = {
   externalLink: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
 }
 
-const NAV = [
-  { section: null, items: [
-    { label: 'Home', href: '/admin', icon: I.home },
-  ]},
-  { section: 'Work', items: [
-    { label: 'Schedule', href: '/admin/schedule', icon: I.calendar },
-    { label: 'Requests', href: '/admin/leads', icon: I.inbox, badge: 3 },
-    { label: 'Quotes', href: '/admin/quotes', icon: I.fileText },
-    { label: 'Jobs', href: '/admin/jobs', icon: I.briefcase },
-  ]},
-  { section: 'Billing', items: [
-    { label: 'Invoices', href: '/admin/invoices', icon: I.creditCard },
-    { label: 'Payments', href: '/admin/payments', icon: I.dollarSign },
-  ]},
-  { section: 'Clients', items: [
-    { label: 'Clients', href: '/admin/contacts', icon: I.users },
-    { label: 'Messages', href: '/admin/messages', icon: I.messageSquare },
-    { label: 'Reviews', href: '/admin/reviews', icon: I.star },
-  ]},
-  { section: 'Insights', items: [
-    { label: 'Reports', href: '/admin/reports', icon: I.barChart },
-    { label: 'Settings', href: '/admin/settings', icon: I.settings },
-  ]},
-]
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [newLeadCount, setNewLeadCount] = useState(0)
 
   const isActive = (href: string) => href === '/admin' ? pathname === '/admin' : pathname.startsWith(href)
+
+  // Fetch new lead count + subscribe to real-time changes
+  useEffect(() => {
+    if (!db) return
+
+    const fetchCount = async () => {
+      const { data } = await db.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
+      setNewLeadCount(data?.length || 0)
+    }
+
+    fetchCount()
+
+    const channel = db
+      .channel('admin_lead_badge')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jb_leads' }, () => {
+        fetchCount()
+      })
+      .subscribe()
+
+    return () => { db.removeChannel(channel) }
+  }, [])
+
+  // Clear badge visual when viewing leads page (leads are still "new" until status changes)
+  const leadsViewed = pathname.startsWith('/admin/leads')
+
+  const NAV = [
+    { section: null, items: [
+      { label: 'Home', href: '/admin', icon: I.home },
+    ]},
+    { section: 'Work', items: [
+      { label: 'Schedule', href: '/admin/schedule', icon: I.calendar },
+      { label: 'Requests', href: '/admin/leads', icon: I.inbox, badge: leadsViewed ? 0 : newLeadCount },
+      { label: 'Quotes', href: '/admin/quotes', icon: I.fileText },
+      { label: 'Jobs', href: '/admin/jobs', icon: I.briefcase },
+    ]},
+    { section: 'Billing', items: [
+      { label: 'Invoices', href: '/admin/invoices', icon: I.creditCard },
+      { label: 'Payments', href: '/admin/payments', icon: I.dollarSign },
+    ]},
+    { section: 'Clients', items: [
+      { label: 'Clients', href: '/admin/contacts', icon: I.users },
+      { label: 'Messages', href: '/admin/messages', icon: I.messageSquare },
+      { label: 'Reviews', href: '/admin/reviews', icon: I.star },
+    ]},
+    { section: 'Insights', items: [
+      { label: 'Reports', href: '/admin/reports', icon: I.barChart },
+      { label: 'Settings', href: '/admin/settings', icon: I.settings },
+    ]},
+  ]
 
   return (
     <div className="admin-layout">
@@ -73,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                   {item.icon}
                   {item.label}
-                  {'badge' in item && item.badge ? <span className="sidebar-badge">{item.badge}</span> : null}
+                  {'badge' in item && item.badge && item.badge > 0 ? <span className="sidebar-badge">{item.badge}</span> : null}
                 </Link>
               ))}
             </div>
@@ -98,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
             <div className="topbar-icon-btn" title="Notifications">
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-              <span className="topbar-dot" />
+              {newLeadCount > 0 && <span className="topbar-dot" />}
             </div>
           </div>
         </header>

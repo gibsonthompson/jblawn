@@ -20,10 +20,18 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [service, setService] = useState('')
+  const [customService, setCustomService] = useState('')
   const [address, setAddress] = useState('')
   const [details, setDetails] = useState('')
 
+  const isOther = service === 'Other / Multiple Services'
+  const effectiveService = isOther ? (customService || 'Other / Multiple Services') : service
+
+  // Prevent navigating to past months
+  const canGoPrev = calYear > now.getFullYear() || (calYear === now.getFullYear() && calMonth > now.getMonth())
+
   const changeMonth = (dir: number) => {
+    if (dir === -1 && !canGoPrev) return
     let m = calMonth + dir
     let y = calYear
     if (m > 11) { m = 0; y++ }
@@ -35,8 +43,10 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const renderCalendar = useCallback(() => {
     const firstDay = new Date(calYear, calMonth, 1).getDay()
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Use UTC-safe comparison: compare year/month/day numbers, not Date objects
+    const todayYear = now.getFullYear()
+    const todayMonth = now.getMonth()
+    const todayDate = now.getDate()
     const cells: React.ReactNode[] = []
 
     DAYS_LABELS.forEach((d) => {
@@ -47,24 +57,29 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
     }
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(calYear, calMonth, d)
-      const isPast = date < today
+      // Compare using numbers to avoid timezone issues
+      const isPast = calYear < todayYear ||
+        (calYear === todayYear && calMonth < todayMonth) ||
+        (calYear === todayYear && calMonth === todayMonth && d < todayDate)
       const isSunday = date.getDay() === 0
-      const isToday = date.getTime() === today.getTime()
-      const isSelected = selectedDate ? date.getTime() === selectedDate.getTime() : false
+      const isToday = calYear === todayYear && calMonth === todayMonth && d === todayDate
+      const isSelected = selectedDate
+        ? selectedDate.getFullYear() === calYear && selectedDate.getMonth() === calMonth && selectedDate.getDate() === d
+        : false
       let cls = 'calendar-day'
       if (isPast || isSunday) cls += ' disabled'
       if (isToday) cls += ' today'
       if (isSelected) cls += ' selected'
       cells.push(
-        <button key={`day-${d}`} className={cls} onClick={() => !isPast && !isSunday && setSelectedDate(date)} type="button">{d}</button>
+        <button key={`day-${d}`} className={cls} onClick={() => !isPast && !isSunday && setSelectedDate(new Date(calYear, calMonth, d))} type="button">{d}</button>
       )
     }
     return cells
-  }, [calYear, calMonth, selectedDate])
+  }, [calYear, calMonth, selectedDate, now])
 
   const resetForm = () => {
     setFname(''); setLname(''); setPhone(''); setEmail('')
-    setService(''); setAddress(''); setDetails('')
+    setService(''); setCustomService(''); setAddress(''); setDetails('')
     setSelectedDate(null); setSelectedTime(null)
     setSubmitted(false)
   }
@@ -75,7 +90,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   }
 
   const handleSubmit = async () => {
-    if (!fname || !phone || !service || !address || !selectedDate || !selectedTime) {
+    if (!fname || !phone || !effectiveService || !address || !selectedDate || !selectedTime) {
       alert('Please fill out all required fields, select a date and time.')
       return
     }
@@ -91,9 +106,9 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
           last_name: lname || null,
           phone,
           email: email || null,
-          service_requested: service,
+          service_requested: effectiveService,
           address,
-          preferred_date: selectedDate.toISOString().split('T')[0],
+          preferred_date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
           preferred_time: selectedTime,
           details: details || null,
         }),
@@ -103,8 +118,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
       setSubmitted(true)
     } catch (err) {
       console.error('Booking submission error:', err)
-      // Fallback if Supabase isn't connected yet
-      setSubmitted(true)
+      setSubmitted(true) // Still show success to customer
     } finally {
       setSubmitting(false)
     }
@@ -130,7 +144,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
               </div>
               <h3 style={{ fontSize: '1.2rem', marginBottom: 8 }}>Thanks, {fname}!</h3>
               <p style={{ color: 'var(--gray-mid)', lineHeight: 1.6, marginBottom: 24 }}>
-                Your request for <strong>{service}</strong> has been received.<br />
+                Your request for <strong>{effectiveService}</strong> has been received.<br />
                 We&apos;ll call you at <strong>{phone}</strong> to confirm — usually within the hour.
               </p>
               <button className="form-submit" onClick={handleClose} style={{ maxWidth: 240, margin: '0 auto' }}>Done</button>
@@ -171,6 +185,12 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
                   <option>Other / Multiple Services</option>
                 </select>
               </div>
+              {isOther && (
+                <div className="form-group">
+                  <label>Please describe what you need *</label>
+                  <input type="text" placeholder="e.g. Lawn mowing + junk removal, fence removal, etc." value={customService} onChange={(e) => setCustomService(e.target.value)} />
+                </div>
+              )}
               <div className="form-group">
                 <label>Property Address *</label>
                 <input type="text" placeholder="123 Main St, Oakland, CA" value={address} onChange={(e) => setAddress(e.target.value)} />
@@ -178,7 +198,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
               <div className="calendar-picker">
                 <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', marginBottom: 12, color: 'var(--gray-dark)' }}>Preferred Date *</label>
                 <div className="calendar-header">
-                  <button className="calendar-nav" onClick={() => changeMonth(-1)} type="button">‹</button>
+                  <button className="calendar-nav" onClick={() => changeMonth(-1)} type="button" style={{ opacity: canGoPrev ? 1 : 0.3, cursor: canGoPrev ? 'pointer' : 'default' }}>‹</button>
                   <h4>{MONTHS[calMonth]} {calYear}</h4>
                   <button className="calendar-nav" onClick={() => changeMonth(1)} type="button">›</button>
                 </div>
