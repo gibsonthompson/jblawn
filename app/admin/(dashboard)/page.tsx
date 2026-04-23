@@ -2,224 +2,248 @@
 
 import Link from 'next/link'
 
-const caseStudies = [
-  {
-    slug: 'insurance-savings',
-    category: 'Cost Reduction',
-    title: 'Regional Carrier Slashes Insurance Costs by $47K',
-    company: 'Ridgeway Transport',
-    description: 'A 12-truck operation was overpaying for insurance through a local agent. GTC pooled their coverage with other carriers to unlock enterprise-level rates.',
-    metric: '$47K',
-    metricLabel: 'Annual savings',
-    image: 'https://images.unsplash.com/photo-1590496793907-51d60f3d9c68?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    slug: 'dedicated-lanes',
-    category: 'Revenue Growth',
-    title: 'OTR Operator Grows Revenue 23% in 90 Days',
-    company: 'Darrell Hawkins',
-    description: 'Struggling to find consistent freight on load boards, this owner-operator found stability through direct shipper connections.',
-    metric: '+23%',
-    metricLabel: 'Revenue increase',
-    image: 'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    slug: 'full-service-partnership',
-    category: 'Full Service',
-    title: '30-Truck Fleet Unlocks $180K in First-Year Value',
-    company: 'Cornerstone Logistics',
-    description: 'A comprehensive GTC partnership delivered savings across insurance, fuel, lanes, and brand presence—transforming the business.',
-    metric: '$180K',
-    metricLabel: 'Total value delivered',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
-  },
+const WORKFLOW = [
+  { label: 'Requests', count: 3, amount: null, href: '/admin/leads' },
+  { label: 'Quotes', count: 2, amount: '$1,450', href: '/admin/quotes' },
+  { label: 'Approved', count: 5, amount: '$3,200', href: '/admin/jobs', active: true },
+  { label: 'To Invoice', count: 2, amount: '$475', href: '/admin/invoices' },
+  { label: 'Awaiting Payment', count: 4, amount: '$1,850', href: '/admin/payments' },
 ]
 
-export default function CaseStudiesPage() {
+const STATS = [
+  { label: 'Revenue (April)', value: '$4,850', meta: '↑ 12% vs March', metaType: 'up', color: 'green', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
+  { label: 'Jobs This Week', value: '14', meta: '3 remaining today', metaType: '', color: 'blue', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+  { label: 'Win Rate', value: '78%', meta: 'quotes → booked', metaType: '', color: 'amber', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> },
+  { label: 'Outstanding', value: '$1,850', meta: '2 overdue', metaType: 'down', color: 'red', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
+]
+
+const TODAYS_JOBS = [
+  { id: 1, customer: 'Maria Rodriguez', service: 'Lawn Mowing', time: '8:00 AM', address: '1245 Oak St, Oakland', status: 'completed' },
+  { id: 2, customer: 'David Lee', service: 'Junk Hauling', time: '10:30 AM', address: '892 Cedar Ave, Berkeley', status: 'in_progress' },
+  { id: 3, customer: 'Tanya Nguyen', service: 'Bush Trimming', time: '1:00 PM', address: '3301 Elm Dr, Richmond', status: 'scheduled' },
+  { id: 4, customer: 'Angela Torres', service: 'Landscaping', time: '3:30 PM', address: '330 Birch Ln, Hayward', status: 'scheduled' },
+]
+
+const ACTIVITY = [
+  { color: 'green', text: <><strong>Maria Rodriguez</strong> paid invoice JB-01012 — $75.00</>, time: '8 min ago' },
+  { color: 'blue', text: <><strong>James Carter</strong> submitted a request for Yard Cleanup</>, time: '22 min ago' },
+  { color: 'amber', text: <>Invoice JB-01009 for <strong>Kevin Park</strong> is 3 days overdue</>, time: '1 hr ago' },
+  { color: 'green', text: <>Lawn Mowing completed at 1245 Oak St</>, time: '2 hrs ago' },
+  { color: 'purple', text: <>Quote QT-00042 sent to <strong>Sarah Mitchell</strong> — $350</>, time: '3 hrs ago' },
+  { color: 'blue', text: <><strong>Robert Kim</strong> approved quote QT-00039 — $400</>, time: '5 hrs ago' },
+]
+
+const ACTIONS = [
+  { label: 'New Request', href: '/admin/leads', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg> },
+  { label: 'Create Quote', href: '/admin/quotes', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> },
+  { label: 'Schedule Job', href: '/admin/jobs', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+  { label: 'Send Invoice', href: '/admin/invoices', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> },
+  { label: 'Add Client', href: '/admin/contacts', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> },
+  { label: 'Request Review', href: '/admin/reviews', icon: <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
+]
+
+const completedToday = 1
+const totalToday = 4
+const pct = Math.round((completedToday / totalToday) * 100)
+
+export default function AdminHome() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-navy-900 pt-32 pb-20">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <nav className="flex items-center gap-2 text-sm text-white/60 mb-8">
-            <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-white">Case Studies</span>
-          </nav>
-          
-          <span className="inline-block text-gold-400 text-[11px] font-bold tracking-[0.15em] uppercase mb-4">
-            Results
-          </span>
-          
-          <h1 className="font-display text-[clamp(2.25rem,4.5vw,3.25rem)] text-white font-bold leading-[1.1] tracking-[-0.02em] max-w-[700px] mb-6">
-            Real Carriers. Real Results.
-          </h1>
-          
-          <p className="text-xl text-white/70 max-w-[550px] leading-relaxed">
-            See how independent carriers and small fleets are using GTC's pooled buying power to cut costs, grow revenue, and compete with the big players.
-          </p>
+      <div className="page-header">
+        <div>
+          <h1>Home</h1>
+          <p>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
         </div>
-      </section>
+      </div>
 
-      {/* Stats Bar */}
-      <section className="bg-white border-b border-gray-200">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
-            <div className="py-8 pr-6 md:pr-8">
-              <p className="font-display text-3xl md:text-4xl font-bold text-gold-500 mb-1">35+</p>
-              <p className="text-sm text-gray-500">Carriers in network</p>
+      {/* Workflow Pipeline */}
+      <div className="workflow-bar">
+        {WORKFLOW.map((step) => (
+          <Link key={step.label} href={step.href} className={`workflow-step${step.active ? ' active' : ''}`}>
+            <div className="workflow-count">{step.count}</div>
+            <div className="workflow-label">{step.label}</div>
+            {step.amount && <div className="workflow-amount">{step.amount}</div>}
+          </Link>
+        ))}
+      </div>
+
+      {/* Stat Cards */}
+      <div className="stats-row">
+        {STATS.map((s) => (
+          <div key={s.label} className="stat-card">
+            <div className="stat-header">
+              <span className="stat-label">{s.label}</span>
+              <div className={`stat-icon ${s.color}`}>{s.icon}</div>
             </div>
-            <div className="py-8 px-6 md:px-8">
-              <p className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-1">$8,400</p>
-              <p className="text-sm text-gray-500">Avg. savings per truck</p>
+            <div className="stat-value">{s.value}</div>
+            <div className={`stat-meta ${s.metaType}`}>{s.meta}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="content-grid">
+        <div className="content-col">
+
+          {/* Today's Schedule */}
+          <div className="card">
+            <div className="card-header">
+              <h3>Today&apos;s Schedule</h3>
+              <Link href="/admin/schedule" className="card-link">View calendar →</Link>
             </div>
-            <div className="py-8 px-6 md:px-8">
-              <p className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-1">$500M+</p>
-              <p className="text-sm text-gray-500">Freight managed</p>
+
+            {/* Progress Ring */}
+            <div className="schedule-progress">
+              <div className="schedule-ring">
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="#F0F2EC" strokeWidth="4" />
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="#6BBF1A" strokeWidth="4"
+                    strokeDasharray={`${pct * 1.257} 125.7`} strokeLinecap="round" />
+                </svg>
+                <div className="schedule-ring-text">{completedToday}/{totalToday}</div>
+              </div>
+              <div className="schedule-info">
+                <div className="schedule-title">{completedToday} of {totalToday} visits complete</div>
+                <div className="schedule-subtitle">Next: David Lee — Junk Hauling at 10:30 AM</div>
+              </div>
             </div>
-            <div className="py-8 pl-6 md:pl-8">
-              <p className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-1">1 Week</p>
-              <p className="text-sm text-gray-500">ROI guarantee</p>
+
+            <div className="card-body">
+              <table className="tbl">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {TODAYS_JOBS.map((job) => (
+                    <tr key={job.id}>
+                      <td>
+                        <div className="cell-primary">{job.customer}</div>
+                        <div className="cell-secondary">{job.address}</div>
+                      </td>
+                      <td>{job.service}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{job.time}</td>
+                      <td><span className={`badge ${job.status}`}>{job.status.replace('_', ' ')}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Recommended Actions */}
+          <div className="card">
+            <div className="card-header">
+              <h3>Recommended Actions</h3>
+            </div>
+            <div className="card-body">
+              <table className="tbl">
+                <tbody>
+                  <tr>
+                    <td>
+                      <div className="cell-primary">Follow up on quote QT-00041</div>
+                      <div className="cell-secondary">Sarah Mitchell hasn&apos;t responded in 3 days</div>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="topbar-btn" style={{ fontSize: 12, padding: '5px 12px' }}>Follow up</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div className="cell-primary">Invoice overdue — Kevin Park</div>
+                      <div className="cell-secondary">JB-01009 · $250.00 · 3 days past due</div>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="topbar-btn" style={{ fontSize: 12, padding: '5px 12px' }}>Send reminder</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div className="cell-primary">New request — James Carter</div>
+                      <div className="cell-secondary">Yard Cleanup · Submitted 22 min ago</div>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="topbar-btn" style={{ fontSize: 12, padding: '5px 12px' }}>Review</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div className="cell-primary">Request review — Maria Rodriguez</div>
+                      <div className="cell-secondary">Last service completed today · No review requested yet</div>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="topbar-btn" style={{ fontSize: 12, padding: '5px 12px' }}>Request</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Case Studies Grid */}
-      <section className="bg-cream-100 py-20">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {caseStudies.map((study) => (
-              <Link 
-                key={study.slug}
-                href={`/case-studies/${study.slug}`}
-                className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <div 
-                  className="h-[200px] bg-cover bg-center relative"
-                  style={{ backgroundImage: `url('${study.image}')` }}
-                >
-                  <div className="absolute inset-0 bg-navy-900/40 group-hover:bg-navy-900/30 transition-colors" />
-                  <span className="absolute bottom-4 left-4 bg-gold-500 text-navy-900 py-1.5 px-3 text-[10px] font-bold tracking-[0.08em] uppercase rounded-sm">
-                    {study.category}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <p className="text-xs text-gray-500 mb-2">{study.company}</p>
-                  <h3 className="font-display text-lg font-bold text-navy-900 leading-tight mb-3 group-hover:text-gold-600 transition-colors">
-                    {study.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
-                    {study.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        {/* Right Column */}
+        <div className="content-col">
+
+          {/* Quick Actions */}
+          <div className="card">
+            <div className="card-header"><h3>Quick Actions</h3></div>
+            <div className="actions-grid">
+              {ACTIONS.map((a) => (
+                <Link key={a.label} href={a.href} className="action-btn">{a.icon}{a.label}</Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Activity Feed */}
+          <div className="card">
+            <div className="card-header"><h3>Recent Activity</h3></div>
+            <div className="card-body">
+              <ul className="feed">
+                {ACTIVITY.map((item, i) => (
+                  <li key={i} className="feed-item">
+                    <div className={`feed-dot ${item.color}`} />
                     <div>
-                      <p className="font-display text-2xl font-bold text-gold-500">{study.metric}</p>
-                      <p className="text-xs text-gray-500">{study.metricLabel}</p>
+                      <div className="feed-text">{item.text}</div>
+                      <div className="feed-time">{item.time}</div>
                     </div>
-                    <span className="text-gold-500 group-hover:translate-x-1 transition-transform">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Revenue by Service */}
+          <div className="card">
+            <div className="card-header">
+              <h3>Revenue by Service</h3>
+              <span style={{ fontSize: 12, color: '#A8AEA0' }}>April 2026</span>
+            </div>
+            <div className="card-body padded">
+              {[
+                { name: 'Lawn Mowing', amount: '$1,875', pct: 39, color: '#6BBF1A' },
+                { name: 'Junk Hauling', amount: '$1,500', pct: 31, color: '#3D8C0E' },
+                { name: 'Yard Cleanup', amount: '$725', pct: 15, color: '#F59E0B' },
+                { name: 'Landscaping', amount: '$450', pct: 9, color: '#3B82F6' },
+                { name: 'Trailer Rental', amount: '$300', pct: 6, color: '#8B5CF6' },
+              ].map((s) => (
+                <div key={s.name} className="rev-row">
+                  <div className="rev-header">
+                    <span className="rev-name">{s.name}</span>
+                    <span className="rev-amount">{s.amount}</span>
+                  </div>
+                  <div className="rev-track">
+                    <div className="rev-fill" style={{ width: `${s.pct}%`, background: s.color }} />
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Industries Section */}
-      <section className="bg-white py-20">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="inline-block text-gold-500 text-[11px] font-bold tracking-[0.15em] uppercase mb-4">
-              Who We Work With
-            </span>
-            <h2 className="font-display text-2xl md:text-3xl text-navy-900 font-bold mb-4">
-              Results Across Fleet Sizes & Freight Types
-            </h2>
-            <p className="text-gray-600 max-w-[550px] mx-auto">
-              From single-truck owner-operators to 100+ truck fleets, GTC's pooled resources deliver value regardless of your operation's scale.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-cream-100 rounded-lg">
-              <div className="w-12 h-12 bg-navy-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <h3 className="font-display font-bold text-navy-900 mb-2">Owner-Operators</h3>
-              <p className="text-sm text-gray-600">1 truck operations looking for stability and better rates</p>
-            </div>
-
-            <div className="text-center p-6 bg-cream-100 rounded-lg">
-              <div className="w-12 h-12 bg-navy-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="font-display font-bold text-navy-900 mb-2">Small Fleets</h3>
-              <p className="text-sm text-gray-600">5-15 trucks ready to professionalize operations</p>
-            </div>
-
-            <div className="text-center p-6 bg-cream-100 rounded-lg">
-              <div className="w-12 h-12 bg-navy-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <h3 className="font-display font-bold text-navy-900 mb-2">Mid-Size Carriers</h3>
-              <p className="text-sm text-gray-600">15-50 trucks scaling beyond founder-led sales</p>
-            </div>
-
-            <div className="text-center p-6 bg-cream-100 rounded-lg">
-              <div className="w-12 h-12 bg-navy-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="font-display font-bold text-navy-900 mb-2">Regional Fleets</h3>
-              <p className="text-sm text-gray-600">50-100+ trucks seeking enterprise-level advantages</p>
+              ))}
             </div>
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-navy-900 py-20">
-        <div className="max-w-[800px] mx-auto px-6 text-center">
-          <span className="inline-block text-gold-400 text-[11px] font-bold tracking-[0.15em] uppercase mb-4">
-            Your Success Story Starts Here
-          </span>
-          <h2 className="font-display text-2xl md:text-3xl text-white font-bold mb-4">
-            Ready to See What's Possible?
-          </h2>
-          <p className="text-white/70 mb-8 max-w-[500px] mx-auto">
-            Schedule a free consultation to see how GTC can help your operation cut costs, grow revenue, and compete at the enterprise level.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/book-call" 
-              className="inline-flex items-center justify-center bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold py-3.5 px-8 rounded transition-colors"
-            >
-              Book a Free Consultation
-            </Link>
-            <Link 
-              href="/#services" 
-              className="inline-flex items-center justify-center border-2 border-white/30 hover:border-white hover:bg-white hover:text-navy-900 text-white font-bold py-3.5 px-8 rounded transition-colors"
-            >
-              Explore Our Services
-            </Link>
-          </div>
-          <p className="text-white/50 text-sm mt-6">
-            1-week ROI guarantee — If we don't make you back our fee in the first week, you pay nothing.
-          </p>
-        </div>
-      </section>
+      </div>
     </>
   )
 }
