@@ -14,12 +14,16 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
       <section className="service-hero" style={{ paddingBottom: 60 }}>
         <div className="container">
           <div className="service-hero-inner" style={{ maxWidth: 680 }}>
-            <Link href="/blog" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '0.88rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-              ← Back to Blog
-            </Link>
-            <div className="section-label">{CATEGORY_LABELS[post.category] || post.category}</div>
+            <div style={{ marginBottom: 24 }}>
+              <Link href="/blog" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>
+                ← Back to Blog
+              </Link>
+            </div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--green-bright)', marginBottom: 12 }}>
+              {CATEGORY_LABELS[post.category] || post.category}
+            </div>
             <h1 className="service-hero-h1" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)' }}>{post.title}</h1>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 12, fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 16, fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', flexWrap: 'wrap' }}>
               <span>{post.author}</span>
               <span>·</span>
               <span>{new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>

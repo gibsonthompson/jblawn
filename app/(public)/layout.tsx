@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import BookingModal from '@/components/BookingModal'
-import { BookingProvider, useBooking } from '@/components/BookingContext'
+import { usePathname } from 'next/navigation'
+import BookingModal from '../../components/BookingModal'
+import { BookingProvider, useBooking } from '../../components/BookingContext'
 
 function PublicLayoutInner({ children }: { children: React.ReactNode }) {
   const { openBooking, closeBooking, isOpen } = useBooking()
+  const pathname = usePathname()
+  const isHomepage = pathname === '/'
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
@@ -32,13 +35,15 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* Announcement Bar */}
-      <div className="announcement-bar">
-        <span>🌿 Now booking lawn care &amp; junk removal across Oakland, Hayward &amp; the East Bay!</span>{' '}
-        <a href="#" onClick={(e) => { e.preventDefault(); openBooking() }}>
-          Book your free estimate today →
-        </a>
-      </div>
+      {/* Announcement Bar — homepage only */}
+      {isHomepage && (
+        <div className="announcement-bar">
+          <span>🌿 Now booking lawn care &amp; junk removal across Oakland, Hayward &amp; the East Bay!</span>{' '}
+          <a href="#" onClick={(e) => { e.preventDefault(); openBooking() }}>
+            Book your free estimate today →
+          </a>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className={`nav${navScrolled ? ' scrolled' : ''}`}>
