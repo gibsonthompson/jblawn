@@ -54,6 +54,14 @@ body {
   font-weight: 700;
 }
 .announcement-bar a:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .announcement-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 20px;
+  }
+}
 
 /* ========== NAVIGATION ========== */
 .nav {

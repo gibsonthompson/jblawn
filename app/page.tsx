@@ -251,7 +251,7 @@ export default function HomePage() {
       />
       {/* Announcement Bar */}
       <div className="announcement-bar">
-        🌿 Now booking lawn care &amp; junk removal across Oakland, Hayward &amp; the East Bay!{' '}
+        <span>🌿 Now booking lawn care &amp; junk removal across Oakland, Hayward &amp; the East Bay!</span>{' '}
         <a href="#" onClick={(e) => { e.preventDefault(); setModalOpen(true) }}>
           Book your free estimate today →
         </a>
