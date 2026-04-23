@@ -27,7 +27,6 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const isOther = service === 'Other / Multiple Services'
   const effectiveService = isOther ? (customService || 'Other / Multiple Services') : service
 
-  // Prevent navigating to past months
   const canGoPrev = (() => {
     const fresh = new Date()
     return calYear > fresh.getFullYear() || (calYear === fresh.getFullYear() && calMonth > fresh.getMonth())
@@ -46,12 +45,10 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const renderCalendar = useCallback(() => {
     const firstDay = new Date(calYear, calMonth, 1).getDay()
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
-    // Fresh date every render — user's local timezone
     const fresh = new Date()
     const todayYear = fresh.getFullYear()
     const todayMonth = fresh.getMonth()
     const todayDate = fresh.getDate()
-    // Minimum bookable date is tomorrow (24h out)
     const minDate = new Date(fresh)
     minDate.setDate(minDate.getDate() + 1)
     const minYear = minDate.getFullYear()
@@ -67,7 +64,6 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
     }
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(calYear, calMonth, d)
-      // Disable anything before tomorrow
       const isTooSoon = calYear < minYear ||
         (calYear === minYear && calMonth < minMonth) ||
         (calYear === minYear && calMonth === minMonth && d < minDay)
@@ -124,11 +120,22 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
         }),
       })
 
-      if (!res.ok) throw new Error('Submission failed')
+      const data = await res.json()
       setSubmitted(true)
+
+      // Delayed customer SMS — 60 seconds after submission
+      if (data.smsData) {
+        setTimeout(() => {
+          fetch('/api/booking/sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data.smsData),
+          }).catch(() => {})
+        }, 60000)
+      }
     } catch (err) {
       console.error('Booking submission error:', err)
-      setSubmitted(true) // Still show success to customer
+      setSubmitted(true)
     } finally {
       setSubmitting(false)
     }
@@ -162,24 +169,12 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
           ) : (
             <>
               <div className="form-row">
-                <div className="form-group">
-                  <label>First Name *</label>
-                  <input type="text" placeholder="John" value={fname} onChange={(e) => setFname(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Last Name</label>
-                  <input type="text" placeholder="Smith" value={lname} onChange={(e) => setLname(e.target.value)} />
-                </div>
+                <div className="form-group"><label>First Name *</label><input type="text" placeholder="John" value={fname} onChange={(e) => setFname(e.target.value)} /></div>
+                <div className="form-group"><label>Last Name</label><input type="text" placeholder="Smith" value={lname} onChange={(e) => setLname(e.target.value)} /></div>
               </div>
               <div className="form-row">
-                <div className="form-group">
-                  <label>Phone *</label>
-                  <input type="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" placeholder="john@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
+                <div className="form-group"><label>Phone *</label><input type="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+                <div className="form-group"><label>Email</label><input type="email" placeholder="john@email.com" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
               </div>
               <div className="form-group">
                 <label>Service Needed *</label>
@@ -201,10 +196,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
                   <input type="text" placeholder="e.g. Lawn mowing + junk removal, fence removal, etc." value={customService} onChange={(e) => setCustomService(e.target.value)} />
                 </div>
               )}
-              <div className="form-group">
-                <label>Property Address *</label>
-                <input type="text" placeholder="123 Main St, Oakland, CA" value={address} onChange={(e) => setAddress(e.target.value)} />
-              </div>
+              <div className="form-group"><label>Property Address *</label><input type="text" placeholder="123 Main St, Oakland, CA" value={address} onChange={(e) => setAddress(e.target.value)} /></div>
               <div className="calendar-picker">
                 <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', marginBottom: 12, color: 'var(--gray-dark)' }}>Preferred Date *</label>
                 <div className="calendar-header">
@@ -222,13 +214,8 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
                   ))}
                 </div>
               </div>
-              <div className="form-group">
-                <label>Additional Details</label>
-                <textarea placeholder="Tell us about the job — lot size, what needs to be hauled, any access issues, etc." value={details} onChange={(e) => setDetails(e.target.value)} />
-              </div>
-              <button className="form-submit" onClick={handleSubmit} type="button" disabled={submitting}>
-                {submitting ? 'Submitting...' : 'Submit Request →'}
-              </button>
+              <div className="form-group"><label>Additional Details</label><textarea placeholder="Tell us about the job — lot size, what needs to be hauled, any access issues, etc." value={details} onChange={(e) => setDetails(e.target.value)} /></div>
+              <button className="form-submit" onClick={handleSubmit} type="button" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit Request →'}</button>
               <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--gray-mid)', marginTop: 12 }}>Appointments available starting tomorrow. We typically confirm within 1 hour.</p>
             </>
           )}

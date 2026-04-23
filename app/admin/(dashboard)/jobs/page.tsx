@@ -6,13 +6,13 @@ import { db } from '../../../../lib/admin-db'
 type Job = {
   id: string; description: string | null; scheduled_date: string | null; time_window: string | null
   status: string; crew_assignment: string | null; created_at: string; completed_at: string | null
-  contact: { first_name: string; last_name: string | null; address: string | null } | null
-  service: { name: string; base_price: number } | null
+  jb_contacts: { first_name: string; last_name: string | null; address: string | null } | null
+  jb_services: { name: string; base_price: number } | null
 }
 type Contact = { id: string; first_name: string; last_name: string | null; phone: string }
 type Service = { id: string; name: string; base_price: number }
 
-const FILTERS = ['all', 'scheduled', 'in_progress', 'completed', 'paid', 'cancelled'] as const
+const FILTERS = ['all', 'scheduled', 'in_progress', 'completed', 'cancelled'] as const
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -26,9 +26,10 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     if (!db) return setLoading(false)
-    const { data } = await db.from('jb_jobs')
-      .select('*, contact:jb_contacts(first_name, last_name, address), service:jb_services(name, base_price)')
+    const { data, error } = await db!.from('jb_jobs')
+      .select('*, jb_contacts(first_name, last_name, address), jb_services(name, base_price)')
       .order('scheduled_date', { ascending: false })
+    if (error) console.error('Jobs fetch error:', error)
     if (data) setJobs(data as unknown as Job[])
     setLoading(false)
   }
@@ -36,8 +37,8 @@ export default function JobsPage() {
   const fetchLookups = async () => {
     if (!db) return
     const [{ data: c }, { data: s }] = await Promise.all([
-      db.from('jb_contacts').select('id, first_name, last_name, phone').eq('is_active', true).order('first_name'),
-      db.from('jb_services').select('id, name, base_price').eq('is_active', true).order('name'),
+      db!.from('jb_contacts').select('id, first_name, last_name, phone').eq('is_active', true).order('first_name'),
+      db!.from('jb_services').select('id, name, base_price').eq('is_active', true).order('name'),
     ])
     if (c) setContacts(c)
     if (s) setServices(s)
@@ -48,7 +49,7 @@ export default function JobsPage() {
   const createJob = async () => {
     if (!db || !form.contact_id || !form.service_id || !form.scheduled_date) return
     setSaving(true)
-    await db.from('jb_jobs').insert({
+    await db!.from('jb_jobs').insert({
       contact_id: form.contact_id, service_id: form.service_id,
       scheduled_date: form.scheduled_date, time_window: form.time_window,
       crew_assignment: form.crew_assignment || null, description: form.description || null,
@@ -63,7 +64,13 @@ export default function JobsPage() {
     if (!db) return
     const updates: Record<string, unknown> = { status }
     if (status === 'completed') updates.completed_at = new Date().toISOString()
-    await db.from('jb_jobs').update(updates).eq('id', id)
+    await db!.from('jb_jobs').update(updates).eq('id', id)
+    fetchJobs()
+  }
+
+  const deleteJob = async (id: string) => {
+    if (!db || !confirm('Delete this job?')) return
+    await db!.from('jb_jobs').delete().eq('id', id)
     fetchJobs()
   }
 
@@ -87,7 +94,7 @@ export default function JobsPage() {
       </div>
 
       {jobs.length === 0 ? (
-        <div className="card"><div className="card-empty">No jobs yet. Create your first job.</div></div>
+        <div className="card"><div className="card-empty">No jobs yet. Convert a request or create one manually.</div></div>
       ) : (
         <div className="card"><div className="card-body">
           <table className="tbl">
@@ -95,15 +102,16 @@ export default function JobsPage() {
             <tbody>
               {filtered.map(j => (
                 <tr key={j.id}>
-                  <td><div className="cell-primary">{j.contact ? `${j.contact.first_name} ${j.contact.last_name || ''}` : '—'}</div><div className="cell-secondary">{j.contact?.address || ''}</div></td>
-                  <td>{j.service?.name || j.description || '—'}</td>
+                  <td><div className="cell-primary">{j.jb_contacts ? `${j.jb_contacts.first_name} ${j.jb_contacts.last_name || ''}` : '—'}</div><div className="cell-secondary">{j.jb_contacts?.address || ''}</div></td>
+                  <td>{j.jb_services?.name || j.description || '—'}</td>
                   <td style={{ whiteSpace: 'nowrap' }}><div>{j.scheduled_date || '—'}</div><div className="cell-secondary">{j.time_window || ''}</div></td>
                   <td>{j.crew_assignment || '—'}</td>
-                  <td style={{ fontWeight: 700 }}>{j.service ? `$${Number(j.service.base_price).toLocaleString()}` : '—'}</td>
+                  <td style={{ fontWeight: 700 }}>{j.jb_services ? `$${Number(j.jb_services.base_price).toLocaleString()}` : '—'}</td>
                   <td><span className={`badge ${j.status}`}>{j.status.replace('_', ' ')}</span></td>
-                  <td style={{ textAlign: 'right' }}>
-                    {j.status === 'scheduled' && <button className="topbar-btn" style={{ fontSize: 11, padding: '4px 10px' }} onClick={() => updateStatus(j.id, 'in_progress')}>Start</button>}
-                    {j.status === 'in_progress' && <button className="topbar-btn" style={{ fontSize: 11, padding: '4px 10px' }} onClick={() => updateStatus(j.id, 'completed')}>Complete</button>}
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {j.status === 'scheduled' && <button className="topbar-btn" style={{ fontSize: 11, padding: '4px 10px', marginRight: 4 }} onClick={() => updateStatus(j.id, 'in_progress')}>Start</button>}
+                    {j.status === 'in_progress' && <button className="topbar-btn" style={{ fontSize: 11, padding: '4px 10px', marginRight: 4 }} onClick={() => updateStatus(j.id, 'completed')}>Complete</button>}
+                    <button style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: 11, fontWeight: 650, fontFamily: 'inherit' }} onClick={() => deleteJob(j.id)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -117,26 +125,14 @@ export default function JobsPage() {
           <div style={{ background: '#fff', borderRadius: 12, padding: 28, width: '100%', maxWidth: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
             <h3 style={{ fontSize: 16, fontWeight: 750, marginBottom: 20 }}>Create Job</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Client *</label>
-                <select value={form.contact_id} onChange={e => setForm(p => ({ ...p, contact_id: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }}>
-                  <option value="">Select client...</option>
-                  {contacts.map(c => <option key={c.id} value={c.id}>{c.first_name} {c.last_name || ''} — {c.phone}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Service *</label>
-                <select value={form.service_id} onChange={e => setForm(p => ({ ...p, service_id: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }}>
-                  <option value="">Select service...</option>
-                  {services.map(s => <option key={s.id} value={s.id}>{s.name} — ${s.base_price}</option>)}
-                </select>
-              </div>
+              <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Client *</label><select value={form.contact_id} onChange={e => setForm(p => ({ ...p, contact_id: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }}><option value="">Select client...</option>{contacts.map(c => <option key={c.id} value={c.id}>{c.first_name} {c.last_name || ''} — {c.phone}</option>)}</select></div>
+              <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Service *</label><select value={form.service_id} onChange={e => setForm(p => ({ ...p, service_id: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }}><option value="">Select service...</option>{services.map(s => <option key={s.id} value={s.id}>{s.name} — ${s.base_price}</option>)}</select></div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Date *</label><input type="date" value={form.scheduled_date} onChange={e => setForm(p => ({ ...p, scheduled_date: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} /></div>
                 <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Time</label><select value={form.time_window} onChange={e => setForm(p => ({ ...p, time_window: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }}>{['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'].map(t => <option key={t}>{t}</option>)}</select></div>
               </div>
               <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Crew</label><input value={form.crew_assignment} onChange={e => setForm(p => ({ ...p, crew_assignment: e.target.value }))} placeholder="JB, Mike, Full crew" style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box' }} /></div>
-              <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Notes</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Job details..." style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box', minHeight: 60 }} /></div>
+              <div><label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#A8AEA0', marginBottom: 4, textTransform: 'uppercase' }}>Notes</label><textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} style={{ width: '100%', padding: '9px 12px', border: '1px solid #E5E8E0', borderRadius: 7, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box', minHeight: 60 }} /></div>
             </div>
             <div style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
               <button className="detail-btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>

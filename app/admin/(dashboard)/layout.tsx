@@ -25,31 +25,30 @@ const I = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [newLeadCount, setNewLeadCount] = useState(0)
   const [createOpen, setCreateOpen] = useState(false)
+  const [newLeadCount, setNewLeadCount] = useState(0)
 
   const isActive = (href: string) => href === '/admin' ? pathname === '/admin' : pathname.startsWith(href)
 
-  // Fetch new lead count + subscribe to real-time changes
+  const fetchCount = async () => {
+    if (!db) return
+    const { data } = await db!.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
+    setNewLeadCount(data?.length || 0)
+  }
+
+  // Fetch on mount + subscribe to realtime
   useEffect(() => {
     if (!db) return
-
-    const fetchCount = async () => {
-      const { data } = await db!.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
-      setNewLeadCount(data?.length || 0)
-    }
-
     fetchCount()
-
     const channel = db!
       .channel('admin_lead_badge')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'jb_leads' }, () => {
-        fetchCount()
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jb_leads' }, () => { fetchCount() })
       .subscribe()
-
     return () => { db!.removeChannel(channel) }
   }, [])
+
+  // Refetch badge when navigating between pages (catches status updates)
+  useEffect(() => { fetchCount() }, [pathname])
 
   // Close create menu on outside click
   useEffect(() => {
@@ -88,22 +87,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="admin-layout">
       {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}
-
       <aside className={`admin-sidebar${open ? ' open' : ''}`}>
-        <div className="sidebar-brand">
-          <img src="/images/jb-logo.jpg" alt="JB Lawn Care" />
-        </div>
+        <div className="sidebar-brand"><img src="/images/jb-logo.jpg" alt="JB Lawn Care" /></div>
         <nav className="sidebar-nav">
           {NAV.map((group, gi) => (
             <div key={gi}>
               {group.section && <div className="sidebar-section-label">{group.section}</div>}
               {group.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`sidebar-item${isActive(item.href) ? ' active' : ''}`}
-                  onClick={() => setOpen(false)}
-                >
+                <Link key={item.href} href={item.href} className={`sidebar-item${isActive(item.href) ? ' active' : ''}`} onClick={() => setOpen(false)}>
                   {item.icon}
                   {item.label}
                   {'badge' in item && item.badge && item.badge > 0 ? <span className="sidebar-badge">{item.badge}</span> : null}
@@ -112,9 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           ))}
         </nav>
-        <div className="sidebar-footer">
-          <a href="/" target="_blank">{I.externalLink} View website</a>
-        </div>
+        <div className="sidebar-footer"><a href="/" target="_blank">{I.externalLink} View website</a></div>
       </aside>
 
       <div className="admin-main">
@@ -131,22 +120,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 Create
               </button>
               {createOpen && (
-                <div style={{
-                  position: 'absolute', top: '100%', right: 0, marginTop: 8,
-                  background: '#fff', borderRadius: 10, border: '1px solid #E5E8E0',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: 200, padding: '6px 0', zIndex: 100,
-                }}>
-                  {[
-                    { label: 'Add Client', href: '/admin/contacts' },
-                    { label: 'Create Job', href: '/admin/jobs' },
-                    { label: 'Create Quote', href: '/admin/quotes' },
-                    { label: 'Create Invoice', href: '/admin/invoices' },
-                  ].map(item => (
-                    <Link key={item.label} href={item.href} onClick={() => setCreateOpen(false)} style={{
-                      display: 'block', padding: '10px 18px', fontSize: 13, fontWeight: 600,
-                      color: '#3A3F35', textDecoration: 'none', transition: 'background 0.1s',
-                    }} onMouseEnter={e => (e.target as HTMLElement).style.background = '#F5F6F2'}
-                       onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}>
+                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, background: '#fff', borderRadius: 10, border: '1px solid #E5E8E0', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: 200, padding: '6px 0', zIndex: 100 }}>
+                  {[{ label: 'Add Client', href: '/admin/contacts' }, { label: 'Create Job', href: '/admin/jobs' }, { label: 'Create Quote', href: '/admin/quotes' }, { label: 'Create Invoice', href: '/admin/invoices' }].map(item => (
+                    <Link key={item.label} href={item.href} onClick={() => setCreateOpen(false)} style={{ display: 'block', padding: '10px 18px', fontSize: 13, fontWeight: 600, color: '#3A3F35', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.target as HTMLElement).style.background = '#F5F6F2'}
+                      onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}>
                       {item.label}
                     </Link>
                   ))}
