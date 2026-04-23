@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!db) return
 
     const fetchCount = async () => {
-      const { data } = await db.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
+      const { data } = await db!.from('jb_leads').select('id', { count: 'exact' }).eq('status', 'new')
       setNewLeadCount(data?.length || 0)
     }
 
@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       })
       .subscribe()
 
-    return () => { db.removeChannel(channel) }
+    return () => { db!.removeChannel(channel) }
   }, [])
 
   // Close create menu on outside click
