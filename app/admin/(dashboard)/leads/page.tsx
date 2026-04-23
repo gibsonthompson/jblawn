@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-)
+import { db } from '../../../../lib/admin-db'
 
 type Lead = {
   id: string
@@ -27,7 +22,7 @@ type Lead = {
 const FILTERS = ['all', 'new', 'contacted', 'quoted', 'booked', 'lost'] as const
 const SRC: Record<string, string> = { website: 'Website', phone: 'Phone', thumbtack: 'Thumbtack', yelp: 'Yelp', google: 'Google', referral: 'Referral' }
 
-function timeAgo(dateStr: string) {
+const timeAgo = (dateStr: string) => {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
   if (mins < 60) return `${mins}m ago`
@@ -42,14 +37,15 @@ export default function LeadsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
   const [selected, setSelected] = useState<Lead | null>(null)
+  const [converting, setConverting] = useState(false)
 
   const fetchLeads = async () => {
-    const { data, error } = await supabase
+    if (!db) return setLoading(false)
+    const { data } = await db
       .from('jb_leads')
       .select('*')
       .order('created_at', { ascending: false })
-
-    if (!error && data) setLeads(data)
+    if (data) setLeads(data)
     setLoading(false)
   }
 
@@ -57,20 +53,93 @@ export default function LeadsPage() {
 
   // Real-time subscription
   useEffect(() => {
-    const channel = supabase
-      .channel('jb_leads_changes')
+    if (!db) return
+    const channel = db!
+      .channel('jb_leads_realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'jb_leads' }, () => {
         fetchLeads()
       })
       .subscribe()
-
-    return () => { supabase.removeChannel(channel) }
+    return () => { db!.removeChannel(channel) }
   }, [])
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from('jb_leads').update({ status }).eq('id', id)
+    if (!db) return
+    await db.from('jb_leads').update({ status }).eq('id', id)
     setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l))
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null)
+  }
+
+  const convertToJob = async (lead: Lead) => {
+    if (!db) return
+    setConverting(true)
+
+    try {
+      // 1. Find the contact by phone
+      const cleanPhone = lead.phone.replace(/\D/g, '')
+      const { data: contact } = await db.from('jb_contacts').select('id').eq('phone', cleanPhone).maybeSingle()
+
+      let contactId = contact?.id
+
+      // 2. If no contact exists, create one
+      if (!contactId) {
+        const parts = lead.address.split(',').map(s => s.trim())
+        const city = parts.length >= 2 ? parts[parts.length - 1].replace(/\s*(CA|California)\s*\d*/i, '').trim() : null
+        const { data: newContact } = await db.from('jb_contacts').insert({
+          first_name: lead.first_name,
+          last_name: lead.last_name || null,
+          phone: cleanPhone,
+          email: lead.email || null,
+          address: lead.address,
+          city: city || null,
+          referral_source: lead.source,
+          tags: ['residential'],
+        }).select('id').single()
+        contactId = newContact?.id
+      }
+
+      if (!contactId) throw new Error('Could not find or create contact')
+
+      // 3. Match service from jb_services by fuzzy name match
+      const { data: services } = await db.from('jb_services').select('id, name').eq('is_active', true)
+      let serviceId = null
+      if (services) {
+        // Try to match service_requested to a service name
+        const requested = lead.service_requested.toLowerCase()
+        const match = services.find(s =>
+          requested.includes(s.name.toLowerCase().split(' ')[0]) ||
+          s.name.toLowerCase().includes(requested.split(' ')[0])
+        )
+        serviceId = match?.id || null
+      }
+
+      // 4. Create the job
+      await db.from('jb_jobs').insert({
+        contact_id: contactId,
+        service_id: serviceId,
+        description: lead.service_requested + (lead.details ? ` — ${lead.details}` : ''),
+        scheduled_date: lead.preferred_date || null,
+        time_window: lead.preferred_time || null,
+        status: 'scheduled',
+      })
+
+      // 5. Update lead status to booked
+      await db.from('jb_leads').update({ status: 'booked' }).eq('id', lead.id)
+      setSelected(prev => prev ? { ...prev, status: 'booked' } : null)
+
+      // 6. Update contact's last_service_date
+      if (lead.preferred_date) {
+        await db.from('jb_contacts').update({ last_service_date: lead.preferred_date }).eq('id', contactId)
+      }
+
+      fetchLeads()
+      alert(`Job created for ${lead.first_name} on ${lead.preferred_date || 'TBD'}. Check the Schedule and Jobs pages.`)
+    } catch (err) {
+      console.error('Convert to job error:', err)
+      alert('Failed to convert. Check console for details.')
+    }
+
+    setConverting(false)
   }
 
   const filtered = filter === 'all' ? leads : leads.filter(l => l.status === filter)
@@ -158,7 +227,7 @@ export default function LeadsPage() {
                   </div>
                 )}
 
-                {/* Status Update Buttons */}
+                {/* Status Update */}
                 <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #F0F2EC' }}>
                   <div className="detail-label" style={{ marginBottom: 8 }}>Update Status</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -173,7 +242,21 @@ export default function LeadsPage() {
                 </div>
 
                 <div className="detail-actions">
-                  <a href={`tel:${selected.phone.replace(/\D/g, '')}`} className="detail-btn-primary">
+                  {/* Convert to Job — only show if not already booked */}
+                  {selected.status !== 'booked' && selected.status !== 'lost' && (
+                    <button className="detail-btn-primary" onClick={() => convertToJob(selected)} disabled={converting} style={{ background: '#6BBF1A' }}>
+                      <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      {converting ? 'Converting...' : 'Convert to Job'}
+                    </button>
+                  )}
+
+                  {selected.status === 'booked' && (
+                    <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 7, padding: '10px 14px', fontSize: 13, color: '#16A34A', fontWeight: 600, textAlign: 'center' }}>
+                      ✓ Converted to Job
+                    </div>
+                  )}
+
+                  <a href={`tel:${selected.phone.replace(/\D/g, '')}`} className="detail-btn-secondary">
                     <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.86 19.86 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.86 19.86 0 012.12 4.18 2 2 0 014.11 2h3"/></svg>
                     Call {selected.first_name}
                   </a>
