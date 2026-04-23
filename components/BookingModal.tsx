@@ -28,7 +28,10 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const effectiveService = isOther ? (customService || 'Other / Multiple Services') : service
 
   // Prevent navigating to past months
-  const canGoPrev = calYear > now.getFullYear() || (calYear === now.getFullYear() && calMonth > now.getMonth())
+  const canGoPrev = (() => {
+    const fresh = new Date()
+    return calYear > fresh.getFullYear() || (calYear === fresh.getFullYear() && calMonth > fresh.getMonth())
+  })()
 
   const changeMonth = (dir: number) => {
     if (dir === -1 && !canGoPrev) return
@@ -43,10 +46,17 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
   const renderCalendar = useCallback(() => {
     const firstDay = new Date(calYear, calMonth, 1).getDay()
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
-    // Use UTC-safe comparison: compare year/month/day numbers, not Date objects
-    const todayYear = now.getFullYear()
-    const todayMonth = now.getMonth()
-    const todayDate = now.getDate()
+    // Fresh date every render — user's local timezone
+    const fresh = new Date()
+    const todayYear = fresh.getFullYear()
+    const todayMonth = fresh.getMonth()
+    const todayDate = fresh.getDate()
+    // Minimum bookable date is tomorrow (24h out)
+    const minDate = new Date(fresh)
+    minDate.setDate(minDate.getDate() + 1)
+    const minYear = minDate.getFullYear()
+    const minMonth = minDate.getMonth()
+    const minDay = minDate.getDate()
     const cells: React.ReactNode[] = []
 
     DAYS_LABELS.forEach((d) => {
@@ -57,25 +67,25 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
     }
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(calYear, calMonth, d)
-      // Compare using numbers to avoid timezone issues
-      const isPast = calYear < todayYear ||
-        (calYear === todayYear && calMonth < todayMonth) ||
-        (calYear === todayYear && calMonth === todayMonth && d < todayDate)
+      // Disable anything before tomorrow
+      const isTooSoon = calYear < minYear ||
+        (calYear === minYear && calMonth < minMonth) ||
+        (calYear === minYear && calMonth === minMonth && d < minDay)
       const isSunday = date.getDay() === 0
       const isToday = calYear === todayYear && calMonth === todayMonth && d === todayDate
       const isSelected = selectedDate
         ? selectedDate.getFullYear() === calYear && selectedDate.getMonth() === calMonth && selectedDate.getDate() === d
         : false
       let cls = 'calendar-day'
-      if (isPast || isSunday) cls += ' disabled'
+      if (isTooSoon || isSunday) cls += ' disabled'
       if (isToday) cls += ' today'
       if (isSelected) cls += ' selected'
       cells.push(
-        <button key={`day-${d}`} className={cls} onClick={() => !isPast && !isSunday && setSelectedDate(new Date(calYear, calMonth, d))} type="button">{d}</button>
+        <button key={`day-${d}`} className={cls} onClick={() => !isTooSoon && !isSunday && setSelectedDate(new Date(calYear, calMonth, d))} type="button">{d}</button>
       )
     }
     return cells
-  }, [calYear, calMonth, selectedDate, now])
+  }, [calYear, calMonth, selectedDate])
 
   const resetForm = () => {
     setFname(''); setLname(''); setPhone(''); setEmail('')
@@ -219,7 +229,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
               <button className="form-submit" onClick={handleSubmit} type="button" disabled={submitting}>
                 {submitting ? 'Submitting...' : 'Submit Request →'}
               </button>
-              <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--gray-mid)', marginTop: 12 }}>We typically respond within 1 hour during business hours.</p>
+              <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--gray-mid)', marginTop: 12 }}>Appointments available starting tomorrow. We typically confirm within 1 hour.</p>
             </>
           )}
         </div>
