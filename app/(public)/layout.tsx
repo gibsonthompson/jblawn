@@ -10,14 +10,19 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   useEffect(() => {
     const onScroll = () => {
       setNavScrolled(window.scrollY > 20)
       setShowBackToTop(window.scrollY > 600)
     }
+    const onClickOutside = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('.dropdown')) setOpenDropdown(null)
+    }
     window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    document.addEventListener('click', onClickOutside)
+    return () => { window.removeEventListener('scroll', onScroll); document.removeEventListener('click', onClickOutside) }
   }, [])
 
   useEffect(() => {
@@ -43,9 +48,9 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
           </Link>
           <ul className="nav-links">
             <li><Link href="/">Home</Link></li>
-            <li className="dropdown">
-              <a href="#">Services ▾</a>
-              <div className="dropdown-menu">
+            <li className={`dropdown${openDropdown === 'services' ? ' open' : ''}`}>
+              <a href="#" onClick={(e) => { e.preventDefault(); setOpenDropdown(openDropdown === 'services' ? null : 'services') }}>Services ▾</a>
+              <div className="dropdown-menu" onClick={() => setOpenDropdown(null)}>
                 <Link href="/services/lawn-mowing">Lawn Mowing &amp; Maintenance</Link>
                 <Link href="/services/landscaping">Landscaping &amp; Sod Installation</Link>
                 <Link href="/services/junk-hauling">Junk Removal &amp; Hauling</Link>
@@ -55,9 +60,9 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
                 <Link href="/services/trailer-rental">Dump Trailer Rental</Link>
               </div>
             </li>
-            <li className="dropdown">
-              <a href="#">Service Areas ▾</a>
-              <div className="dropdown-menu">
+            <li className={`dropdown${openDropdown === 'areas' ? ' open' : ''}`}>
+              <a href="#" onClick={(e) => { e.preventDefault(); setOpenDropdown(openDropdown === 'areas' ? null : 'areas') }}>Service Areas ▾</a>
+              <div className="dropdown-menu" onClick={() => setOpenDropdown(null)}>
                 <Link href="/areas/oakland">Oakland</Link>
                 <Link href="/areas/san-francisco">San Francisco</Link>
                 <Link href="/areas/berkeley">Berkeley</Link>
