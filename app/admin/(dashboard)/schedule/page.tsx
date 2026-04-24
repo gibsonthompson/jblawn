@@ -60,8 +60,8 @@ export default function SchedulePage() {
     }
 
     // Step 2: Get unique contact and service IDs
-    const contactIds = [...new Set(jobs.map(j => j.contact_id).filter(Boolean))]
-    const serviceIds = [...new Set(jobs.map(j => j.service_id).filter(Boolean))]
+    const contactIds = Array.from(new Set(jobs.map(j => j.contact_id).filter(Boolean)))
+    const serviceIds = Array.from(new Set(jobs.map(j => j.service_id).filter(Boolean)))
 
     // Step 3: Batch fetch contacts and services separately
     const contactMap: Record<string, { first_name: string; last_name: string | null; address: string | null }> = {}
