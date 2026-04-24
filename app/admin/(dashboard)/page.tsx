@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { db } from '../../../../lib/admin-db'
+import { db } from '../../../lib/admin-db'
 
 type TodayJob = { client: string; service: string; time: string; address: string; status: string }
 type Activity = { color: string; text: string; time: string; ts: number }
