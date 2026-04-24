@@ -58,7 +58,6 @@ export default function AdminHome() {
       ? `${now.getFullYear() - 1}-12-01`
       : `${now.getFullYear()}-${String(now.getMonth()).padStart(2, '0')}-01`
 
-    // Get day of week (0=Sun, 1=Mon...)
     const dayOfWeek = now.getDay()
     const monday = new Date(now)
     monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1))
@@ -68,33 +67,88 @@ export default function AdminHome() {
     const weekEnd = sunday.toISOString().split('T')[0]
 
     try {
+      // ──── ALL FLAT QUERIES (no joins) ────
       const [
         leadsRes, quotesRes, jobsRes, todayJobsRes, weekJobsRes,
         invoicesRes, paymentsMonthRes, paymentsPrevRes,
         recentLeadsRes, recentJobsRes, recentPaymentsRes, recentQuotesRes,
-        staleQuotesRes, overdueInvRes, newLeadsRes, reviewEligibleRes,
+        staleQuotesRes, overdueInvRes, newLeadsRes,
         serviceJobsRes,
       ] = await Promise.all([
         db!.from('jb_leads').select('status'),
         db!.from('jb_quotes').select('status, total'),
         db!.from('jb_jobs').select('status'),
-        db!.from('jb_jobs').select('*, jb_contacts(first_name, last_name, address), jb_services(name)').eq('scheduled_date', today).order('time_window'),
+        db!.from('jb_jobs').select('id, contact_id, service_id, time_window, status, description').eq('scheduled_date', today).order('time_window'),
         db!.from('jb_jobs').select('id').gte('scheduled_date', weekStart).lte('scheduled_date', weekEnd),
-        db!.from('jb_invoices').select('status, total'),
+        db!.from('jb_invoices').select('status, total, invoice_number, contact_id'),
         db!.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', monthStart),
         db!.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', prevMonthStart).lt('created_at', monthStart),
         db!.from('jb_leads').select('first_name, service_requested, created_at').order('created_at', { ascending: false }).limit(4),
-        db!.from('jb_jobs').select('status, completed_at, jb_contacts(first_name)').not('completed_at', 'is', null).order('completed_at', { ascending: false }).limit(4),
-        db!.from('jb_payments').select('amount, created_at, jb_contacts(first_name), jb_invoices(invoice_number)').eq('status', 'succeeded').order('created_at', { ascending: false }).limit(4),
-        db!.from('jb_quotes').select('quote_number, total, created_at, jb_contacts(first_name)').order('created_at', { ascending: false }).limit(4),
-        db!.from('jb_quotes').select('quote_number, jb_contacts(first_name)').eq('status', 'sent').lt('sent_at', new Date(Date.now() - 3 * 86400000).toISOString()),
-        db!.from('jb_invoices').select('invoice_number, total, jb_contacts(first_name)').eq('status', 'overdue'),
+        db!.from('jb_jobs').select('status, completed_at, contact_id').not('completed_at', 'is', null).order('completed_at', { ascending: false }).limit(4),
+        db!.from('jb_payments').select('amount, created_at, contact_id, invoice_id').eq('status', 'succeeded').order('created_at', { ascending: false }).limit(4),
+        db!.from('jb_quotes').select('quote_number, total, created_at, contact_id').order('created_at', { ascending: false }).limit(4),
+        db!.from('jb_quotes').select('quote_number, contact_id').eq('status', 'sent').lt('sent_at', new Date(Date.now() - 3 * 86400000).toISOString()),
+        db!.from('jb_invoices').select('invoice_number, total, contact_id').eq('status', 'overdue'),
         db!.from('jb_leads').select('first_name, service_requested, created_at').eq('status', 'new').order('created_at', { ascending: false }).limit(3),
-        db!.from('jb_contacts').select('first_name').eq('review_status', 'not_requested').not('last_service_date', 'is', null).limit(3),
-        db!.from('jb_jobs').select('jb_services(name, base_price)').in('status', ['completed', 'invoiced', 'paid']),
+        db!.from('jb_jobs').select('service_id').in('status', ['completed', 'invoiced', 'paid']),
       ])
 
-      // --- WORKFLOW PIPELINE ---
+      // ──── BATCH LOOKUP: collect ALL contact/service/invoice IDs across queries ────
+      const allContactIds: string[] = []
+      const allServiceIds: string[] = []
+      const allInvoiceIds: string[] = []
+
+      const todayJobsRaw = todayJobsRes.data || []
+      todayJobsRaw.forEach((j: Record<string, unknown>) => { if (j.contact_id) allContactIds.push(j.contact_id as string); if (j.service_id) allServiceIds.push(j.service_id as string) })
+
+      const recentJobsRaw = recentJobsRes.data || []
+      recentJobsRaw.forEach((j: Record<string, unknown>) => { if (j.contact_id) allContactIds.push(j.contact_id as string) })
+
+      const recentPaymentsRaw = recentPaymentsRes.data || []
+      recentPaymentsRaw.forEach((p: Record<string, unknown>) => { if (p.contact_id) allContactIds.push(p.contact_id as string); if (p.invoice_id) allInvoiceIds.push(p.invoice_id as string) })
+
+      const recentQuotesRaw = recentQuotesRes.data || []
+      recentQuotesRaw.forEach((q: Record<string, unknown>) => { if (q.contact_id) allContactIds.push(q.contact_id as string) })
+
+      const staleQuotesRaw = staleQuotesRes.data || []
+      staleQuotesRaw.forEach((q: Record<string, unknown>) => { if (q.contact_id) allContactIds.push(q.contact_id as string) })
+
+      const overdueInvRaw = overdueInvRes.data || []
+      overdueInvRaw.forEach((i: Record<string, unknown>) => { if (i.contact_id) allContactIds.push(i.contact_id as string) })
+
+      const serviceJobsRaw = serviceJobsRes.data || []
+      serviceJobsRaw.forEach((j: Record<string, unknown>) => { if (j.service_id) allServiceIds.push(j.service_id as string) })
+
+      // Deduplicate
+      const uniqueContactIds = Array.from(new Set(allContactIds))
+      const uniqueServiceIds = Array.from(new Set(allServiceIds))
+      const uniqueInvoiceIds = Array.from(new Set(allInvoiceIds))
+
+      // Single batch fetch per table
+      const contactMap: Record<string, { first_name: string; last_name: string | null; address: string | null }> = {}
+      const serviceMap: Record<string, { name: string; default_price: number }> = {}
+      const invoiceNumMap: Record<string, string> = {}
+
+      if (uniqueContactIds.length > 0) {
+        const { data: cData } = await db!.from('jb_contacts').select('id, first_name, last_name, address').in('id', uniqueContactIds)
+        ;(cData || []).forEach((c: Record<string, unknown>) => {
+          contactMap[c.id as string] = { first_name: c.first_name as string, last_name: c.last_name as string | null, address: c.address as string | null }
+        })
+      }
+      if (uniqueServiceIds.length > 0) {
+        const { data: sData } = await db!.from('jb_services').select('id, name, default_price').in('id', uniqueServiceIds)
+        ;(sData || []).forEach((s: Record<string, unknown>) => {
+          serviceMap[s.id as string] = { name: s.name as string, default_price: Number(s.default_price) }
+        })
+      }
+      if (uniqueInvoiceIds.length > 0) {
+        const { data: iData } = await db!.from('jb_invoices').select('id, invoice_number').in('id', uniqueInvoiceIds)
+        ;(iData || []).forEach((i: Record<string, unknown>) => {
+          invoiceNumMap[i.id as string] = (i.invoice_number as string) || '—'
+        })
+      }
+
+      // ──── WORKFLOW PIPELINE ────
       const leads = leadsRes.data || []
       setNewLeads(leads.filter(l => l.status === 'new').length)
 
@@ -104,13 +158,10 @@ export default function AdminHome() {
       setQuotesAmount(pendingQuotes.reduce((s, q) => s + Number(q.total), 0))
 
       const jobs = jobsRes.data || []
-      const scheduledJobs = jobs.filter(j => j.status === 'scheduled')
-      setApprovedCount(scheduledJobs.length)
-      // For approved amount, we'd need to join to services — use count × avg for now
-      setApprovedAmount(0) // Will show count only
+      setApprovedCount(jobs.filter(j => j.status === 'scheduled').length)
+      setApprovedAmount(0)
 
-      const completedNoInvoice = jobs.filter(j => j.status === 'completed')
-      setToInvoiceCount(completedNoInvoice.length)
+      setToInvoiceCount(jobs.filter(j => j.status === 'completed').length)
       setToInvoiceAmount(0)
 
       const invoices = invoicesRes.data || []
@@ -118,17 +169,15 @@ export default function AdminHome() {
       setAwaitingCount(awaitingInv.length)
       setAwaitingAmount(awaitingInv.reduce((s, i) => s + Number(i.total), 0))
 
-      // --- STAT CARDS ---
+      // ──── STAT CARDS ────
       const monthPayments = paymentsMonthRes.data || []
-      const monthRev = monthPayments.reduce((s, p) => s + Number(p.amount), 0)
-      setRevenueMonth(monthRev)
+      setRevenueMonth(monthPayments.reduce((s, p) => s + Number(p.amount), 0))
 
       const prevPayments = paymentsPrevRes.data || []
       setPrevRevenueMonth(prevPayments.reduce((s, p) => s + Number(p.amount), 0))
 
       setJobsThisWeek((weekJobsRes.data || []).length)
 
-      // Win rate: approved / (approved + declined + expired)
       const decidedQuotes = quotes.filter(q => ['approved', 'declined', 'expired'].includes(q.status))
       const approvedQuotes = quotes.filter(q => q.status === 'approved')
       setWinRate(decidedQuotes.length > 0 ? Math.round((approvedQuotes.length / decidedQuotes.length) * 100) : 0)
@@ -136,12 +185,12 @@ export default function AdminHome() {
       setOutstanding(awaitingInv.reduce((s, i) => s + Number(i.total), 0))
       setOverdueCount(invoices.filter(i => i.status === 'overdue').length)
 
-      // --- TODAY'S SCHEDULE ---
-      const tJobs = (todayJobsRes.data || []).map((j: Record<string, unknown>) => {
-        const c = j.jb_contacts as { first_name: string; last_name: string | null; address: string | null } | null
-        const s = j.jb_services as { name: string } | null
+      // ──── TODAY'S SCHEDULE (using lookup maps) ────
+      const tJobs = todayJobsRaw.map((j: Record<string, unknown>) => {
+        const c = contactMap[j.contact_id as string] || null
+        const s = serviceMap[j.service_id as string] || null
         return {
-          client: c ? `${c.first_name} ${c.last_name || ''}` : '—',
+          client: c ? `${c.first_name} ${c.last_name || ''}`.trim() : '—',
           service: s?.name || (j.description as string) || '—',
           time: (j.time_window as string) || '—',
           address: c?.address || '—',
@@ -154,29 +203,23 @@ export default function AdminHome() {
       setNextJob(nextUp ? `${nextUp.client} — ${nextUp.service} at ${nextUp.time}` : null)
       setRemainingToday(tJobs.filter(j => j.status !== 'completed').length)
 
-      // --- RECOMMENDED ACTIONS ---
+      // ──── RECOMMENDED ACTIONS ────
       const actionList: Action[] = []
-      const staleQ = staleQuotesRes.data || []
-      staleQ.forEach((q: Record<string, unknown>) => {
-        const c = q.jb_contacts as { first_name: string } | null
+      staleQuotesRaw.forEach((q: Record<string, unknown>) => {
+        const c = contactMap[q.contact_id as string] || null
         actionList.push({ title: `Follow up on quote ${q.quote_number}`, subtitle: `${c?.first_name || 'Client'} hasn't responded in 3+ days`, btn: 'Follow up', href: '/admin/quotes' })
       })
-      const overdueInv = overdueInvRes.data || []
-      overdueInv.forEach((i: Record<string, unknown>) => {
-        const c = i.jb_contacts as { first_name: string } | null
+      overdueInvRaw.forEach((i: Record<string, unknown>) => {
+        const c = contactMap[i.contact_id as string] || null
         actionList.push({ title: `Invoice overdue — ${c?.first_name || 'Client'}`, subtitle: `${i.invoice_number} · $${Number(i.total).toLocaleString()} past due`, btn: 'Send reminder', href: '/admin/invoices' })
       })
       const newL = newLeadsRes.data || []
       newL.forEach((l: Record<string, unknown>) => {
         actionList.push({ title: `New request — ${l.first_name}`, subtitle: `${l.service_requested}`, btn: 'Review', href: '/admin/leads' })
       })
-      const reviewEl = reviewEligibleRes.data || []
-      reviewEl.forEach((c: Record<string, unknown>) => {
-        actionList.push({ title: `Request review — ${c.first_name}`, subtitle: 'Completed service, no review requested yet', btn: 'Request', href: '/admin/reviews' })
-      })
       setActions(actionList.slice(0, 4))
 
-      // --- ACTIVITY FEED ---
+      // ──── ACTIVITY FEED ────
       const feed: Activity[] = []
       const timeAgo = (d: string) => {
         const diff = Date.now() - new Date(d).getTime()
@@ -187,31 +230,30 @@ export default function AdminHome() {
         return `${Math.floor(hrs / 24)}d ago`
       }
 
-      ;(recentPaymentsRes.data || []).forEach((p: Record<string, unknown>) => {
-        const c = p.jb_contacts as { first_name: string } | null
-        const inv = p.jb_invoices as { invoice_number: string } | null
-        feed.push({ color: 'green', text: `${c?.first_name || 'Client'} paid ${inv?.invoice_number || 'invoice'} — $${Number(p.amount).toLocaleString()}`, time: timeAgo(p.created_at as string), ts: new Date(p.created_at as string).getTime() })
+      recentPaymentsRaw.forEach((p: Record<string, unknown>) => {
+        const c = contactMap[p.contact_id as string] || null
+        const invNum = p.invoice_id ? (invoiceNumMap[p.invoice_id as string] || 'invoice') : 'invoice'
+        feed.push({ color: 'green', text: `${c?.first_name || 'Client'} paid ${invNum} — $${Number(p.amount).toLocaleString()}`, time: timeAgo(p.created_at as string), ts: new Date(p.created_at as string).getTime() })
       })
       ;(recentLeadsRes.data || []).forEach((l: Record<string, unknown>) => {
         feed.push({ color: 'blue', text: `${l.first_name} submitted a request for ${l.service_requested}`, time: timeAgo(l.created_at as string), ts: new Date(l.created_at as string).getTime() })
       })
-      ;(recentJobsRes.data || []).forEach((j: Record<string, unknown>) => {
-        const c = j.jb_contacts as { first_name: string } | null
+      recentJobsRaw.forEach((j: Record<string, unknown>) => {
+        const c = contactMap[j.contact_id as string] || null
         if (j.completed_at) feed.push({ color: 'green', text: `Job completed for ${c?.first_name || 'client'}`, time: timeAgo(j.completed_at as string), ts: new Date(j.completed_at as string).getTime() })
       })
-      ;(recentQuotesRes.data || []).forEach((q: Record<string, unknown>) => {
-        const c = q.jb_contacts as { first_name: string } | null
+      recentQuotesRaw.forEach((q: Record<string, unknown>) => {
+        const c = contactMap[q.contact_id as string] || null
         feed.push({ color: 'purple', text: `Quote ${q.quote_number} sent to ${c?.first_name || 'client'} — $${Number(q.total).toLocaleString()}`, time: timeAgo(q.created_at as string), ts: new Date(q.created_at as string).getTime() })
       })
       feed.sort((a, b) => b.ts - a.ts)
       setActivity(feed.slice(0, 6))
 
-      // --- REVENUE BY SERVICE ---
-      const svcJobs = serviceJobsRes.data || []
+      // ──── REVENUE BY SERVICE (using lookup map) ────
       const svcMap: Record<string, number> = {}
-      svcJobs.forEach((j: Record<string, unknown>) => {
-        const s = j.jb_services as { name: string; base_price: number } | null
-        if (s) svcMap[s.name] = (svcMap[s.name] || 0) + Number(s.base_price)
+      serviceJobsRaw.forEach((j: Record<string, unknown>) => {
+        const s = serviceMap[j.service_id as string] || null
+        if (s) svcMap[s.name] = (svcMap[s.name] || 0) + Number(s.default_price)
       })
       const svcColors = ['#6BBF1A', '#3D8C0E', '#F59E0B', '#3B82F6', '#8B5CF6', '#EF4444', '#14B8A6']
       const svcTotal = Object.values(svcMap).reduce((s, v) => s + v, 0) || 1

@@ -6,8 +6,8 @@ import { db } from '../../../../lib/admin-db'
 type Invoice = {
   id: string; invoice_number: string | null; total: number; status: string; notes: string | null
   due_date: string | null; sent_at: string | null; paid_at: string | null; created_at: string
-  jb_contacts: { first_name: string; last_name: string | null } | null
-  jb_jobs: { jb_services: { name: string } | null } | null
+  contact_id: string | null; job_id: string | null
+  client_name: string; service_name: string
 }
 type Contact = { id: string; first_name: string; last_name: string | null }
 
@@ -24,10 +24,64 @@ export default function InvoicesPage() {
 
   const fetchInvoices = async () => {
     if (!db) return setLoading(false)
-    const { data } = await db!.from('jb_invoices')
-      .select('*, jb_contacts(first_name, last_name), jb_jobs(jb_services(name))')
+
+    // Step 1: Fetch invoices flat (no joins)
+    const { data: invRaw } = await db!.from('jb_invoices')
+      .select('id, invoice_number, contact_id, job_id, total, status, notes, due_date, sent_at, paid_at, created_at')
       .order('created_at', { ascending: false })
-    if (data) setInvoices(data as unknown as Invoice[])
+    const rawInvs = invRaw || []
+
+    if (rawInvs.length === 0) { setInvoices([]); setLoading(false); return }
+
+    // Step 2: Collect unique IDs
+    const contactIds = Array.from(new Set(rawInvs.map((i: Record<string, unknown>) => i.contact_id).filter(Boolean)))
+    const jobIds = Array.from(new Set(rawInvs.map((i: Record<string, unknown>) => i.job_id).filter(Boolean)))
+
+    // Step 3: Batch fetch contacts
+    const contactMap: Record<string, { first_name: string; last_name: string | null }> = {}
+    if (contactIds.length > 0) {
+      const { data: cData } = await db!.from('jb_contacts').select('id, first_name, last_name').in('id', contactIds)
+      ;(cData || []).forEach((c: Record<string, unknown>) => {
+        contactMap[c.id as string] = { first_name: c.first_name as string, last_name: c.last_name as string | null }
+      })
+    }
+
+    // Step 4: Batch fetch jobs → then services (two-hop: invoice → job → service)
+    const jobServiceMap: Record<string, string> = {}
+    if (jobIds.length > 0) {
+      const { data: jData } = await db!.from('jb_jobs').select('id, service_id').in('id', jobIds)
+      const serviceIds = Array.from(new Set((jData || []).map((j: Record<string, unknown>) => j.service_id).filter(Boolean)))
+      if (serviceIds.length > 0) {
+        const { data: sData } = await db!.from('jb_services').select('id, name').in('id', serviceIds)
+        const sMap: Record<string, string> = {}
+        ;(sData || []).forEach((s: Record<string, unknown>) => { sMap[s.id as string] = s.name as string })
+        ;(jData || []).forEach((j: Record<string, unknown>) => {
+          if (j.service_id) jobServiceMap[j.id as string] = sMap[j.service_id as string] || '—'
+        })
+      }
+    }
+
+    // Step 5: Merge
+    const enriched: Invoice[] = rawInvs.map((i: Record<string, unknown>) => {
+      const contact = contactMap[i.contact_id as string] || null
+      return {
+        id: i.id as string,
+        invoice_number: i.invoice_number as string | null,
+        total: Number(i.total),
+        status: i.status as string,
+        notes: i.notes as string | null,
+        due_date: i.due_date as string | null,
+        sent_at: i.sent_at as string | null,
+        paid_at: i.paid_at as string | null,
+        created_at: i.created_at as string,
+        contact_id: i.contact_id as string | null,
+        job_id: i.job_id as string | null,
+        client_name: contact ? `${contact.first_name} ${contact.last_name || ''}`.trim() : '—',
+        service_name: i.job_id ? (jobServiceMap[i.job_id as string] || '—') : '—',
+      }
+    })
+
+    setInvoices(enriched)
     setLoading(false)
   }
 
@@ -93,8 +147,8 @@ export default function InvoicesPage() {
               {filtered.map(inv => (
                 <tr key={inv.id}>
                   <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{inv.invoice_number || inv.id.slice(0, 8)}</span></td>
-                  <td className="cell-primary">{inv.jb_contacts ? `${inv.jb_contacts.first_name} ${inv.jb_contacts.last_name || ''}` : '—'}</td>
-                  <td>{inv.jb_jobs?.jb_services?.name || '—'}</td>
+                  <td className="cell-primary">{inv.client_name}</td>
+                  <td>{inv.service_name}</td>
                   <td style={{ fontWeight: 700 }}>${Number(inv.total).toLocaleString()}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>{new Date(inv.created_at).toLocaleDateString()}</td>
                   <td><span className={`badge ${inv.status}`}>{inv.status}</span></td>

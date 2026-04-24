@@ -1,9 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { db } from '../../../../lib/admin-db'
+
+type ServiceRow = { id: string; name: string; default_price: number; price_type: string; is_active: boolean }
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('business')
+  const [services, setServices] = useState<ServiceRow[]>([])
+  const [loadingServices, setLoadingServices] = useState(true)
+
+  useEffect(() => {
+    if (!db) return setLoadingServices(false)
+    fetchServices()
+  }, [])
+
+  const fetchServices = async () => {
+    if (!db) return
+    const { data } = await db!.from('jb_services').select('id, name, default_price, price_type, is_active').order('sort_order')
+    if (data) setServices(data as unknown as ServiceRow[])
+    setLoadingServices(false)
+  }
+
+  const toggleService = async (id: string, currentlyActive: boolean) => {
+    if (!db) return
+    await db!.from('jb_services').update({ is_active: !currentlyActive }).eq('id', id)
+    setServices(prev => prev.map(s => s.id === id ? { ...s, is_active: !currentlyActive } : s))
+  }
 
   return (
     <>
@@ -39,28 +62,31 @@ export default function SettingsPage() {
 
       {activeTab === 'services' && (
         <div className="card"><div className="card-body">
-          <table className="tbl">
-            <thead><tr><th>Service</th><th>Base Price</th><th>Type</th><th>Status</th></tr></thead>
-            <tbody>
-              {[
-                { name: 'Lawn Mowing & Maintenance', price: 65, type: 'flat', active: true },
-                { name: 'Landscaping & Sod Installation', price: 2000, type: 'per project', active: true },
-                { name: 'Junk Removal & Hauling', price: 150, type: 'flat', active: true },
-                { name: 'Yard Cleanup & Debris', price: 200, type: 'flat', active: true },
-                { name: 'Bush & Hedge Trimming', price: 100, type: 'flat', active: true },
-                { name: 'Mulching & Bed Maintenance', price: 150, type: 'flat', active: true },
-                { name: '10-Yard Dump Trailer (DIY)', price: 150, type: 'per day', active: true },
-                { name: '10-Yard Dump Trailer (Full Service)', price: 400, type: 'flat', active: true },
-              ].map(s => (
-                <tr key={s.name}>
-                  <td className="cell-primary">{s.name}</td>
-                  <td>${s.price}</td>
-                  <td style={{ textTransform: 'capitalize', color: '#7A8072' }}>{s.type}</td>
-                  <td><span className={`badge ${s.active ? 'completed' : 'draft'}`}>{s.active ? 'active' : 'inactive'}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {loadingServices ? (
+            <div className="card-empty">Loading services...</div>
+          ) : services.length === 0 ? (
+            <div className="card-empty">No services found in database.</div>
+          ) : (
+            <table className="tbl">
+              <thead><tr><th>Service</th><th>Default Price</th><th>Type</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                {services.map(s => (
+                  <tr key={s.id}>
+                    <td className="cell-primary">{s.name}</td>
+                    <td>{s.price_type === 'custom' ? 'Custom' : `$${Number(s.default_price).toLocaleString()}`}</td>
+                    <td style={{ textTransform: 'capitalize', color: '#7A8072' }}>{s.price_type}</td>
+                    <td><span className={`badge ${s.is_active ? 'completed' : 'draft'}`}>{s.is_active ? 'active' : 'inactive'}</span></td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        style={{ background: 'none', border: 'none', color: s.is_active ? '#DC2626' : '#6BBF1A', cursor: 'pointer', fontSize: 11, fontWeight: 650, fontFamily: 'inherit' }}
+                        onClick={() => toggleService(s.id, s.is_active)}
+                      >{s.is_active ? 'Deactivate' : 'Activate'}</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div></div>
       )}
 

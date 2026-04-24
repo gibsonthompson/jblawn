@@ -5,8 +5,8 @@ import { db } from '../../../../lib/admin-db'
 
 type Payment = {
   id: string; amount: number; payment_method: string | null; status: string; created_at: string
-  jb_invoices: { invoice_number: string | null } | null
-  jb_contacts: { first_name: string; last_name: string | null } | null
+  invoice_id: string | null; contact_id: string | null
+  client_name: string; invoice_number: string
 }
 
 export default function PaymentsPage() {
@@ -32,19 +32,57 @@ export default function PaymentsPage() {
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
     })()
 
+    // Step 1: Fetch payments flat (no joins)
     const [paymentsRes, invoicesRes, paidInvoicesRes] = await Promise.all([
       db!.from('jb_payments')
-        .select('*, jb_invoices(invoice_number), jb_contacts(first_name, last_name)')
+        .select('id, amount, payment_method, status, created_at, invoice_id, contact_id')
         .order('created_at', { ascending: false }),
       db!.from('jb_invoices').select('status, total'),
       db!.from('jb_invoices').select('sent_at, paid_at').eq('status', 'paid').not('sent_at', 'is', null).not('paid_at', 'is', null),
     ])
 
-    const allPayments = (paymentsRes.data || []) as unknown as Payment[]
-    setPayments(allPayments)
+    const rawPayments = paymentsRes.data || []
+
+    // Step 2: Batch fetch related data
+    const contactIds = Array.from(new Set(rawPayments.map((p: Record<string, unknown>) => p.contact_id).filter(Boolean)))
+    const invoiceIds = Array.from(new Set(rawPayments.map((p: Record<string, unknown>) => p.invoice_id).filter(Boolean)))
+
+    const contactMap: Record<string, { first_name: string; last_name: string | null }> = {}
+    const invoiceMap: Record<string, string> = {}
+
+    if (contactIds.length > 0) {
+      const { data: cData } = await db!.from('jb_contacts').select('id, first_name, last_name').in('id', contactIds)
+      ;(cData || []).forEach((c: Record<string, unknown>) => {
+        contactMap[c.id as string] = { first_name: c.first_name as string, last_name: c.last_name as string | null }
+      })
+    }
+    if (invoiceIds.length > 0) {
+      const { data: iData } = await db!.from('jb_invoices').select('id, invoice_number').in('id', invoiceIds)
+      ;(iData || []).forEach((i: Record<string, unknown>) => {
+        invoiceMap[i.id as string] = (i.invoice_number as string) || '—'
+      })
+    }
+
+    // Step 3: Merge
+    const enriched: Payment[] = rawPayments.map((p: Record<string, unknown>) => {
+      const contact = contactMap[p.contact_id as string] || null
+      return {
+        id: p.id as string,
+        amount: Number(p.amount),
+        payment_method: p.payment_method as string | null,
+        status: p.status as string,
+        created_at: p.created_at as string,
+        invoice_id: p.invoice_id as string | null,
+        contact_id: p.contact_id as string | null,
+        client_name: contact ? `${contact.first_name} ${contact.last_name || ''}`.trim() : '—',
+        invoice_number: p.invoice_id ? (invoiceMap[p.invoice_id as string] || '—') : '—',
+      }
+    })
+
+    setPayments(enriched)
 
     // This month total
-    const thisMonth = allPayments
+    const thisMonth = enriched
       .filter(p => p.status === 'succeeded' && p.created_at >= monthStart)
       .reduce((s, p) => s + Number(p.amount), 0)
     setMonthTotal(thisMonth)
@@ -111,8 +149,8 @@ export default function PaymentsPage() {
             <tbody>
               {payments.map(p => (
                 <tr key={p.id}>
-                  <td className="cell-primary">{p.jb_contacts ? `${p.jb_contacts.first_name} ${p.jb_contacts.last_name || ''}` : '—'}</td>
-                  <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{p.jb_invoices?.invoice_number || '—'}</span></td>
+                  <td className="cell-primary">{p.client_name}</td>
+                  <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{p.invoice_number}</span></td>
                   <td style={{ fontWeight: 700 }}>${Number(p.amount).toLocaleString()}</td>
                   <td style={{ textTransform: 'capitalize' }}>{p.payment_method || '—'}</td>
                   <td>{new Date(p.created_at).toLocaleDateString()}</td>
