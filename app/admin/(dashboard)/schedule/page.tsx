@@ -22,45 +22,106 @@ export default function SchedulePage() {
     return monday
   })
 
-  const getWeekDates = () => DAY_LABELS.map((_, i) => { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); return d })
+  const getWeekDates = () => DAY_LABELS.map((_, i) => {
+    const d = new Date(weekStart)
+    d.setDate(weekStart.getDate() + i)
+    return d
+  })
+
   const weekDates = getWeekDates()
 
   const fetchWeek = async () => {
     if (!db) return setLoading(false)
     setLoading(true)
+
     const startStr = weekDates[0].toISOString().split('T')[0]
     const endStr = weekDates[6].toISOString().split('T')[0]
 
-    const { data } = await db!.from('jb_jobs')
-      .select('id, scheduled_date, time_window, status, crew_assignment, description, jb_contacts(first_name, last_name, address), jb_services(name)')
-      .gte('scheduled_date', startStr).lte('scheduled_date', endStr).order('time_window')
+    // Step 1: Fetch jobs for this week (no joins)
+    const { data: jobsRaw, error: jobsError } = await db!.from('jb_jobs')
+      .select('id, contact_id, service_id, scheduled_date, time_window, status, crew_assignment, description')
+      .gte('scheduled_date', startStr)
+      .lte('scheduled_date', endStr)
+      .order('time_window')
 
+    if (jobsError) {
+      console.error('[SCHEDULE] Jobs fetch error:', jobsError)
+      setLoading(false)
+      return
+    }
+
+    const jobs = jobsRaw || []
+    console.log('[SCHEDULE]', { startStr, endStr, jobCount: jobs.length })
+
+    if (jobs.length === 0) {
+      setWeekJobs({})
+      setLoading(false)
+      return
+    }
+
+    // Step 2: Get unique contact and service IDs
+    const contactIds = [...new Set(jobs.map(j => j.contact_id).filter(Boolean))]
+    const serviceIds = [...new Set(jobs.map(j => j.service_id).filter(Boolean))]
+
+    // Step 3: Batch fetch contacts and services separately
+    const contactMap: Record<string, { first_name: string; last_name: string | null; address: string | null }> = {}
+    const serviceMap: Record<string, { name: string }> = {}
+
+    if (contactIds.length > 0) {
+      const { data: contacts } = await db!.from('jb_contacts').select('id, first_name, last_name, address').in('id', contactIds)
+      ;(contacts || []).forEach((c: Record<string, unknown>) => {
+        contactMap[c.id as string] = { first_name: c.first_name as string, last_name: c.last_name as string | null, address: c.address as string | null }
+      })
+    }
+
+    if (serviceIds.length > 0) {
+      const { data: services } = await db!.from('jb_services').select('id, name').in('id', serviceIds)
+      ;(services || []).forEach((s: Record<string, unknown>) => {
+        serviceMap[s.id as string] = { name: s.name as string }
+      })
+    }
+
+    // Step 4: Build calendar data
     const grouped: Record<string, CalJob[]> = {}
-    ;(data || []).forEach((j: Record<string, unknown>) => {
+    jobs.forEach((j) => {
       const date = j.scheduled_date as string
-      const c = j.jb_contacts as { first_name: string; last_name: string | null; address: string | null } | null
-      const s = j.jb_services as { name: string } | null
+      const contact = contactMap[j.contact_id] || null
+      const service = serviceMap[j.service_id] || null
+
       if (!grouped[date]) grouped[date] = []
       grouped[date].push({
-        id: j.id as string,
-        time: (j.time_window as string) || '—',
-        client: c ? `${c.first_name} ${c.last_name || ''}` : '—',
-        service: s?.name || '—',
-        status: j.status as string,
-        address: c?.address || '—',
-        crew: (j.crew_assignment as string) || '—',
-        description: (j.description as string) || '',
+        id: j.id,
+        time: j.time_window || '—',
+        client: contact ? `${contact.first_name} ${contact.last_name || ''}`.trim() : '—',
+        service: service?.name || j.description || '—',
+        status: j.status,
+        address: contact?.address || '—',
+        crew: j.crew_assignment || '—',
+        description: j.description || '',
         date,
       })
     })
+
     setWeekJobs(grouped)
     setLoading(false)
   }
 
   useEffect(() => { fetchWeek() }, [weekStart])
 
-  const changeWeek = (dir: number) => setWeekStart(prev => { const n = new Date(prev); n.setDate(prev.getDate() + dir * 7); return n })
-  const goToday = () => { const now = new Date(); const day = now.getDay(); const m = new Date(now); m.setDate(now.getDate() - (day === 0 ? 6 : day - 1)); m.setHours(0,0,0,0); setWeekStart(m) }
+  const changeWeek = (dir: number) => setWeekStart(prev => {
+    const n = new Date(prev)
+    n.setDate(prev.getDate() + dir * 7)
+    return n
+  })
+
+  const goToday = () => {
+    const now = new Date()
+    const day = now.getDay()
+    const m = new Date(now)
+    m.setDate(now.getDate() - (day === 0 ? 6 : day - 1))
+    m.setHours(0, 0, 0, 0)
+    setWeekStart(m)
+  }
 
   const updateStatus = async (id: string, status: string) => {
     if (!db) return
@@ -112,7 +173,6 @@ export default function SchedulePage() {
                     padding: '8px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
                     borderLeft: `3px solid ${STATUS_COLOR[job.status] || '#9CA3AF'}`,
                     background: selectedJob?.id === job.id ? '#F0F7E8' : '#FAFBF8',
-                    transition: 'background 0.1s',
                   }}>
                     <div style={{ fontWeight: 700, color: '#1A1D16', marginBottom: 2 }}>{job.time}</div>
                     <div style={{ color: '#3A3F35' }}>{job.client}</div>
@@ -126,7 +186,6 @@ export default function SchedulePage() {
         })}
       </div>
 
-      {/* Job Detail Popup */}
       {selectedJob && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) setSelectedJob(null) }}>
           <div style={{ background: '#fff', borderRadius: 12, padding: 28, width: '100%', maxWidth: 420, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
@@ -134,23 +193,19 @@ export default function SchedulePage() {
               <h3 style={{ fontSize: 16, fontWeight: 750 }}>{selectedJob.client}</h3>
               <button onClick={() => setSelectedJob(null)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#A8AEA0' }}>✕</button>
             </div>
-
             <div style={{ marginBottom: 16 }}><span className={`badge ${selectedJob.status}`}>{selectedJob.status.replace('_', ' ')}</span></div>
-
             {[['Service', selectedJob.service], ['Date', selectedJob.date], ['Time', selectedJob.time], ['Address', selectedJob.address], ['Crew', selectedJob.crew]].map(([l, v]) => (
               <div key={l} style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#A8AEA0', marginBottom: 3 }}>{l}</div>
                 <div style={{ fontSize: 13.5, color: '#1A1D16', fontWeight: 500 }}>{v}</div>
               </div>
             ))}
-
             {selectedJob.description && (
               <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#A8AEA0', marginBottom: 3 }}>Notes</div>
                 <div style={{ fontSize: 13, color: '#3A3F35', background: '#FAFBF8', padding: '10px 12px', borderRadius: 7, border: '1px solid #F0F2EC' }}>{selectedJob.description}</div>
               </div>
             )}
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 20, paddingTop: 16, borderTop: '1px solid #F0F2EC' }}>
               {selectedJob.status === 'scheduled' && <button className="detail-btn-primary" onClick={() => updateStatus(selectedJob.id, 'in_progress')}>Start Job</button>}
               {selectedJob.status === 'in_progress' && <button className="detail-btn-primary" onClick={() => updateStatus(selectedJob.id, 'completed')}>Mark Complete</button>}
