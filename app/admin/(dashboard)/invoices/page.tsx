@@ -6,8 +6,8 @@ import { db } from '../../../../lib/admin-db'
 type Invoice = {
   id: string; invoice_number: string | null; total: number; status: string; notes: string | null
   due_date: string | null; sent_at: string | null; paid_at: string | null; created_at: string
-  contact: { first_name: string; last_name: string | null } | null
-  job: { service: { name: string } | null } | null
+  jb_contacts: { first_name: string; last_name: string | null } | null
+  jb_jobs: { jb_services: { name: string } | null } | null
 }
 type Contact = { id: string; first_name: string; last_name: string | null }
 
@@ -24,8 +24,8 @@ export default function InvoicesPage() {
 
   const fetchInvoices = async () => {
     if (!db) return setLoading(false)
-    const { data } = await db.from('jb_invoices')
-      .select('*, contact:jb_contacts(first_name, last_name), job:jb_jobs(service:jb_services(name))')
+    const { data } = await db!.from('jb_invoices')
+      .select('*, jb_contacts(first_name, last_name), jb_jobs(jb_services(name))')
       .order('created_at', { ascending: false })
     if (data) setInvoices(data as unknown as Invoice[])
     setLoading(false)
@@ -33,7 +33,7 @@ export default function InvoicesPage() {
 
   const fetchContacts = async () => {
     if (!db) return
-    const { data } = await db.from('jb_contacts').select('id, first_name, last_name').eq('is_active', true).order('first_name')
+    const { data } = await db!.from('jb_contacts').select('id, first_name, last_name').eq('is_active', true).order('first_name')
     if (data) setContacts(data)
   }
 
@@ -44,14 +44,14 @@ export default function InvoicesPage() {
     const updates: Record<string, unknown> = { status }
     if (status === 'sent') updates.sent_at = new Date().toISOString()
     if (status === 'paid') updates.paid_at = new Date().toISOString()
-    await db.from('jb_invoices').update(updates).eq('id', id)
+    await db!.from('jb_invoices').update(updates).eq('id', id)
     fetchInvoices()
   }
 
   const createInvoice = async () => {
     if (!db || !form.contact_id || !form.total) return
     setSaving(true)
-    await db.from('jb_invoices').insert({
+    await db!.from('jb_invoices').insert({
       contact_id: form.contact_id,
       total: Number(form.total), subtotal: Number(form.total),
       due_date: form.due_date || null, notes: form.notes || null,
@@ -93,8 +93,8 @@ export default function InvoicesPage() {
               {filtered.map(inv => (
                 <tr key={inv.id}>
                   <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{inv.invoice_number || inv.id.slice(0, 8)}</span></td>
-                  <td className="cell-primary">{inv.contact ? `${inv.contact.first_name} ${inv.contact.last_name || ''}` : '—'}</td>
-                  <td>{inv.job?.service?.name || '—'}</td>
+                  <td className="cell-primary">{inv.jb_contacts ? `${inv.jb_contacts.first_name} ${inv.jb_contacts.last_name || ''}` : '—'}</td>
+                  <td>{inv.jb_jobs?.jb_services?.name || '—'}</td>
                   <td style={{ fontWeight: 700 }}>${Number(inv.total).toLocaleString()}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>{new Date(inv.created_at).toLocaleDateString()}</td>
                   <td><span className={`badge ${inv.status}`}>{inv.status}</span></td>

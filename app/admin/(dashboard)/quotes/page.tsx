@@ -6,8 +6,8 @@ import { db } from '../../../../lib/admin-db'
 type Quote = {
   id: string; quote_number: string | null; total: number; status: string
   description: string | null; valid_until: string | null; created_at: string
-  contact: { first_name: string; last_name: string | null } | null
-  service: { name: string } | null
+  jb_contacts: { first_name: string; last_name: string | null } | null
+  jb_services: { name: string } | null
 }
 type Contact = { id: string; first_name: string; last_name: string | null }
 type Service = { id: string; name: string; base_price: number }
@@ -26,8 +26,8 @@ export default function QuotesPage() {
 
   const fetchQuotes = async () => {
     if (!db) return setLoading(false)
-    const { data } = await db.from('jb_quotes')
-      .select('*, contact:jb_contacts(first_name, last_name), service:jb_services(name)')
+    const { data } = await db!.from('jb_quotes')
+      .select('*, jb_contacts(first_name, last_name), jb_services(name)')
       .order('created_at', { ascending: false })
     if (data) setQuotes(data as unknown as Quote[])
     setLoading(false)
@@ -36,8 +36,8 @@ export default function QuotesPage() {
   const fetchLookups = async () => {
     if (!db) return
     const [{ data: c }, { data: s }] = await Promise.all([
-      db.from('jb_contacts').select('id, first_name, last_name').eq('is_active', true).order('first_name'),
-      db.from('jb_services').select('id, name, base_price').eq('is_active', true).order('name'),
+      db!.from('jb_contacts').select('id, first_name, last_name').eq('is_active', true).order('first_name'),
+      db!.from('jb_services').select('id, name, base_price').eq('is_active', true).order('name'),
     ])
     if (c) setContacts(c)
     if (s) setServices(s)
@@ -57,7 +57,7 @@ export default function QuotesPage() {
     setSaving(true)
     const validUntil = new Date()
     validUntil.setDate(validUntil.getDate() + Number(form.valid_days || 14))
-    await db.from('jb_quotes').insert({
+    await db!.from('jb_quotes').insert({
       contact_id: form.contact_id,
       service_id: form.service_id || null,
       total: Number(form.total), subtotal: Number(form.total),
@@ -77,7 +77,7 @@ export default function QuotesPage() {
     if (status === 'sent') updates.sent_at = new Date().toISOString()
     if (status === 'approved') updates.approved_at = new Date().toISOString()
     if (status === 'declined') updates.declined_at = new Date().toISOString()
-    await db.from('jb_quotes').update(updates).eq('id', id)
+    await db!.from('jb_quotes').update(updates).eq('id', id)
     fetchQuotes()
   }
 
@@ -110,8 +110,8 @@ export default function QuotesPage() {
               {filtered.map(q => (
                 <tr key={q.id}>
                   <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{q.quote_number || q.id.slice(0, 8)}</span></td>
-                  <td className="cell-primary">{q.contact ? `${q.contact.first_name} ${q.contact.last_name || ''}` : '—'}</td>
-                  <td>{q.service?.name || q.description || '—'}</td>
+                  <td className="cell-primary">{q.jb_contacts ? `${q.jb_contacts.first_name} ${q.jb_contacts.last_name || ''}` : '—'}</td>
+                  <td>{q.jb_services?.name || q.description || '—'}</td>
                   <td style={{ fontWeight: 700 }}>${Number(q.total).toLocaleString()}</td>
                   <td>{new Date(q.created_at).toLocaleDateString()}</td>
                   <td>{q.valid_until || '—'}</td>

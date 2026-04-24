@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { db } from '../../../lib/admin-db'
+import { db } from '../../../../lib/admin-db'
 
 type TodayJob = { client: string; service: string; time: string; address: string; status: string }
 type Activity = { color: string; text: string; time: string; ts: number }
@@ -75,23 +75,23 @@ export default function AdminHome() {
         staleQuotesRes, overdueInvRes, newLeadsRes, reviewEligibleRes,
         serviceJobsRes,
       ] = await Promise.all([
-        db.from('jb_leads').select('status'),
-        db.from('jb_quotes').select('status, total'),
-        db.from('jb_jobs').select('status'),
-        db.from('jb_jobs').select('*, contact:jb_contacts(first_name, last_name, address), service:jb_services(name)').eq('scheduled_date', today).order('time_window'),
-        db.from('jb_jobs').select('id').gte('scheduled_date', weekStart).lte('scheduled_date', weekEnd),
-        db.from('jb_invoices').select('status, total'),
-        db.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', monthStart),
-        db.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', prevMonthStart).lt('created_at', monthStart),
-        db.from('jb_leads').select('first_name, service_requested, created_at').order('created_at', { ascending: false }).limit(4),
-        db.from('jb_jobs').select('status, completed_at, contact:jb_contacts(first_name)').not('completed_at', 'is', null).order('completed_at', { ascending: false }).limit(4),
-        db.from('jb_payments').select('amount, created_at, contact:jb_contacts(first_name), invoice:jb_invoices(invoice_number)').eq('status', 'succeeded').order('created_at', { ascending: false }).limit(4),
-        db.from('jb_quotes').select('quote_number, total, created_at, contact:jb_contacts(first_name)').order('created_at', { ascending: false }).limit(4),
-        db.from('jb_quotes').select('quote_number, contact:jb_contacts(first_name)').eq('status', 'sent').lt('sent_at', new Date(Date.now() - 3 * 86400000).toISOString()),
-        db.from('jb_invoices').select('invoice_number, total, contact:jb_contacts(first_name)').eq('status', 'overdue'),
-        db.from('jb_leads').select('first_name, service_requested, created_at').eq('status', 'new').order('created_at', { ascending: false }).limit(3),
-        db.from('jb_contacts').select('first_name').eq('review_status', 'not_requested').not('last_service_date', 'is', null).limit(3),
-        db.from('jb_jobs').select('service:jb_services(name, base_price)').in('status', ['completed', 'invoiced', 'paid']),
+        db!.from('jb_leads').select('status'),
+        db!.from('jb_quotes').select('status, total'),
+        db!.from('jb_jobs').select('status'),
+        db!.from('jb_jobs').select('*, jb_contacts(first_name, last_name, address), jb_services(name)').eq('scheduled_date', today).order('time_window'),
+        db!.from('jb_jobs').select('id').gte('scheduled_date', weekStart).lte('scheduled_date', weekEnd),
+        db!.from('jb_invoices').select('status, total'),
+        db!.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', monthStart),
+        db!.from('jb_payments').select('amount').eq('status', 'succeeded').gte('created_at', prevMonthStart).lt('created_at', monthStart),
+        db!.from('jb_leads').select('first_name, service_requested, created_at').order('created_at', { ascending: false }).limit(4),
+        db!.from('jb_jobs').select('status, completed_at, jb_contacts(first_name)').not('completed_at', 'is', null).order('completed_at', { ascending: false }).limit(4),
+        db!.from('jb_payments').select('amount, created_at, jb_contacts(first_name), jb_invoices(invoice_number)').eq('status', 'succeeded').order('created_at', { ascending: false }).limit(4),
+        db!.from('jb_quotes').select('quote_number, total, created_at, jb_contacts(first_name)').order('created_at', { ascending: false }).limit(4),
+        db!.from('jb_quotes').select('quote_number, jb_contacts(first_name)').eq('status', 'sent').lt('sent_at', new Date(Date.now() - 3 * 86400000).toISOString()),
+        db!.from('jb_invoices').select('invoice_number, total, jb_contacts(first_name)').eq('status', 'overdue'),
+        db!.from('jb_leads').select('first_name, service_requested, created_at').eq('status', 'new').order('created_at', { ascending: false }).limit(3),
+        db!.from('jb_contacts').select('first_name').eq('review_status', 'not_requested').not('last_service_date', 'is', null).limit(3),
+        db!.from('jb_jobs').select('jb_services(name, base_price)').in('status', ['completed', 'invoiced', 'paid']),
       ])
 
       // --- WORKFLOW PIPELINE ---
@@ -138,8 +138,8 @@ export default function AdminHome() {
 
       // --- TODAY'S SCHEDULE ---
       const tJobs = (todayJobsRes.data || []).map((j: Record<string, unknown>) => {
-        const c = j.contact as { first_name: string; last_name: string | null; address: string | null } | null
-        const s = j.service as { name: string } | null
+        const c = j.jb_contacts as { first_name: string; last_name: string | null; address: string | null } | null
+        const s = j.jb_services as { name: string } | null
         return {
           client: c ? `${c.first_name} ${c.last_name || ''}` : '—',
           service: s?.name || (j.description as string) || '—',
@@ -158,12 +158,12 @@ export default function AdminHome() {
       const actionList: Action[] = []
       const staleQ = staleQuotesRes.data || []
       staleQ.forEach((q: Record<string, unknown>) => {
-        const c = q.contact as { first_name: string } | null
+        const c = q.jb_contacts as { first_name: string } | null
         actionList.push({ title: `Follow up on quote ${q.quote_number}`, subtitle: `${c?.first_name || 'Client'} hasn't responded in 3+ days`, btn: 'Follow up', href: '/admin/quotes' })
       })
       const overdueInv = overdueInvRes.data || []
       overdueInv.forEach((i: Record<string, unknown>) => {
-        const c = i.contact as { first_name: string } | null
+        const c = i.jb_contacts as { first_name: string } | null
         actionList.push({ title: `Invoice overdue — ${c?.first_name || 'Client'}`, subtitle: `${i.invoice_number} · $${Number(i.total).toLocaleString()} past due`, btn: 'Send reminder', href: '/admin/invoices' })
       })
       const newL = newLeadsRes.data || []
@@ -178,7 +178,7 @@ export default function AdminHome() {
 
       // --- ACTIVITY FEED ---
       const feed: Activity[] = []
-      const timeAgo = (d: string) => {
+      function timeAgo(d: string) {
         const diff = Date.now() - new Date(d).getTime()
         const mins = Math.floor(diff / 60000)
         if (mins < 60) return `${mins}m ago`
@@ -188,19 +188,19 @@ export default function AdminHome() {
       }
 
       ;(recentPaymentsRes.data || []).forEach((p: Record<string, unknown>) => {
-        const c = p.contact as { first_name: string } | null
-        const inv = p.invoice as { invoice_number: string } | null
+        const c = p.jb_contacts as { first_name: string } | null
+        const inv = p.jb_invoices as { invoice_number: string } | null
         feed.push({ color: 'green', text: `${c?.first_name || 'Client'} paid ${inv?.invoice_number || 'invoice'} — $${Number(p.amount).toLocaleString()}`, time: timeAgo(p.created_at as string), ts: new Date(p.created_at as string).getTime() })
       })
       ;(recentLeadsRes.data || []).forEach((l: Record<string, unknown>) => {
         feed.push({ color: 'blue', text: `${l.first_name} submitted a request for ${l.service_requested}`, time: timeAgo(l.created_at as string), ts: new Date(l.created_at as string).getTime() })
       })
       ;(recentJobsRes.data || []).forEach((j: Record<string, unknown>) => {
-        const c = j.contact as { first_name: string } | null
+        const c = j.jb_contacts as { first_name: string } | null
         if (j.completed_at) feed.push({ color: 'green', text: `Job completed for ${c?.first_name || 'client'}`, time: timeAgo(j.completed_at as string), ts: new Date(j.completed_at as string).getTime() })
       })
       ;(recentQuotesRes.data || []).forEach((q: Record<string, unknown>) => {
-        const c = q.contact as { first_name: string } | null
+        const c = q.jb_contacts as { first_name: string } | null
         feed.push({ color: 'purple', text: `Quote ${q.quote_number} sent to ${c?.first_name || 'client'} — $${Number(q.total).toLocaleString()}`, time: timeAgo(q.created_at as string), ts: new Date(q.created_at as string).getTime() })
       })
       feed.sort((a, b) => b.ts - a.ts)
@@ -210,7 +210,7 @@ export default function AdminHome() {
       const svcJobs = serviceJobsRes.data || []
       const svcMap: Record<string, number> = {}
       svcJobs.forEach((j: Record<string, unknown>) => {
-        const s = j.service as { name: string; base_price: number } | null
+        const s = j.jb_services as { name: string; base_price: number } | null
         if (s) svcMap[s.name] = (svcMap[s.name] || 0) + Number(s.base_price)
       })
       const svcColors = ['#6BBF1A', '#3D8C0E', '#F59E0B', '#3B82F6', '#8B5CF6', '#EF4444', '#14B8A6']

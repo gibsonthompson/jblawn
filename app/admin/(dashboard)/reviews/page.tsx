@@ -8,7 +8,7 @@ type Review = {
   platform: string; rating: number | null; review_text: string | null
   status: string; request_sent_at: string | null; review_left: boolean
   review_left_at: string | null; created_at: string
-  contact: { first_name: string; last_name: string | null } | null
+  jb_contacts: { first_name: string; last_name: string | null } | null
 }
 
 type Contact = { id: string; first_name: string; last_name: string | null; phone: string }
@@ -32,8 +32,8 @@ export default function ReviewsPage() {
 
   const fetchReviews = async () => {
     if (!db) return setLoading(false)
-    const { data } = await db.from('jb_reviews')
-      .select('*, contact:jb_contacts(first_name, last_name)')
+    const { data } = await db!.from('jb_reviews')
+      .select('*, jb_contacts(first_name, last_name)')
       .order('created_at', { ascending: false })
     if (data) setReviews(data as unknown as Review[])
     setLoading(false)
@@ -41,7 +41,7 @@ export default function ReviewsPage() {
 
   const fetchContacts = async () => {
     if (!db) return
-    const { data } = await db.from('jb_contacts').select('id, first_name, last_name, phone').eq('is_active', true).order('first_name')
+    const { data } = await db!.from('jb_contacts').select('id, first_name, last_name, phone').eq('is_active', true).order('first_name')
     if (data) setContacts(data)
   }
 
@@ -54,13 +54,13 @@ export default function ReviewsPage() {
     : '—'
 
   // Get contacts who don't have a review yet
-  const reviewedContactIds = new Set(reviews.map(r => r.contact?.first_name).filter(Boolean))
+  const reviewedContactIds = new Set(reviews.map(r => r.jb_contacts?.first_name).filter(Boolean))
   const eligibleContacts = contacts.filter(c => !reviewedContactIds.has(c.first_name))
 
   const addReview = async () => {
     if (!db || !form.reviewer_name || !form.review_text || !form.rating) return
     setSaving(true)
-    await db.from('jb_reviews').insert({
+    await db!.from('jb_reviews').insert({
       reviewer_name: form.reviewer_name,
       reviewer_location: form.reviewer_location || null,
       platform: form.platform,
@@ -80,7 +80,7 @@ export default function ReviewsPage() {
   const startEdit = (r: Review) => {
     setEditing(r)
     setForm({
-      reviewer_name: r.reviewer_name || (r.contact ? `${r.contact.first_name} ${r.contact.last_name || ''}` : ''),
+      reviewer_name: r.reviewer_name || (r.jb_contacts ? `${r.jb_contacts.first_name} ${r.jb_contacts.last_name || ''}` : ''),
       reviewer_location: r.reviewer_location || '',
       platform: r.platform,
       rating: String(r.rating || 5),
@@ -92,7 +92,7 @@ export default function ReviewsPage() {
   const saveEdit = async () => {
     if (!db || !editing) return
     setSaving(true)
-    await db.from('jb_reviews').update({
+    await db!.from('jb_reviews').update({
       reviewer_name: form.reviewer_name,
       reviewer_location: form.reviewer_location || null,
       platform: form.platform,
@@ -110,7 +110,7 @@ export default function ReviewsPage() {
 
   const deleteReview = async (id: string) => {
     if (!db || !confirm('Delete this review?')) return
-    await db.from('jb_reviews').delete().eq('id', id)
+    await db!.from('jb_reviews').delete().eq('id', id)
     fetchReviews()
   }
 
@@ -118,7 +118,7 @@ export default function ReviewsPage() {
     if (!db || !requestForm.contact_id) return
     setSaving(true)
     const contact = contacts.find(c => c.id === requestForm.contact_id)
-    await db.from('jb_reviews').insert({
+    await db!.from('jb_reviews').insert({
       contact_id: requestForm.contact_id,
       reviewer_name: contact ? `${contact.first_name} ${contact.last_name || ''}` : null,
       platform: requestForm.platform,
@@ -193,7 +193,7 @@ export default function ReviewsPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                           <div className="feed-text">
-                            <strong>{r.reviewer_name || (r.contact ? `${r.contact.first_name} ${r.contact.last_name || ''}` : 'Anonymous')}</strong>
+                            <strong>{r.reviewer_name || (r.jb_contacts ? `${r.jb_contacts.first_name} ${r.jb_contacts.last_name || ''}` : 'Anonymous')}</strong>
                             {' '}left a {r.rating}★ review on <span style={{ textTransform: 'capitalize' }}>{r.platform}</span>
                           </div>
                           {r.reviewer_location && (
@@ -256,7 +256,7 @@ export default function ReviewsPage() {
                   {requested.map(r => (
                     <tr key={r.id}>
                       <td>
-                        <div className="cell-primary">{r.reviewer_name || (r.contact ? `${r.contact.first_name} ${r.contact.last_name || ''}` : '—')}</div>
+                        <div className="cell-primary">{r.reviewer_name || (r.jb_contacts ? `${r.jb_contacts.first_name} ${r.jb_contacts.last_name || ''}` : '—')}</div>
                         <div className="cell-secondary">Requested {r.request_sent_at ? new Date(r.request_sent_at).toLocaleDateString() : '—'}</div>
                       </td>
                       <td style={{ textAlign: 'right' }}>

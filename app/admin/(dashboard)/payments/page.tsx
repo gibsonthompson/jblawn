@@ -5,8 +5,8 @@ import { db } from '../../../../lib/admin-db'
 
 type Payment = {
   id: string; amount: number; payment_method: string | null; status: string; created_at: string
-  invoice: { invoice_number: string | null } | null
-  contact: { first_name: string; last_name: string | null } | null
+  jb_invoices: { invoice_number: string | null } | null
+  jb_contacts: { first_name: string; last_name: string | null } | null
 }
 
 export default function PaymentsPage() {
@@ -33,11 +33,11 @@ export default function PaymentsPage() {
     })()
 
     const [paymentsRes, invoicesRes, paidInvoicesRes] = await Promise.all([
-      db.from('jb_payments')
-        .select('*, invoice:jb_invoices(invoice_number), contact:jb_contacts(first_name, last_name)')
+      db!.from('jb_payments')
+        .select('*, jb_invoices(invoice_number), jb_contacts(first_name, last_name)')
         .order('created_at', { ascending: false }),
-      db.from('jb_invoices').select('status, total'),
-      db.from('jb_invoices').select('sent_at, paid_at').eq('status', 'paid').not('sent_at', 'is', null).not('paid_at', 'is', null),
+      db!.from('jb_invoices').select('status, total'),
+      db!.from('jb_invoices').select('sent_at, paid_at').eq('status', 'paid').not('sent_at', 'is', null).not('paid_at', 'is', null),
     ])
 
     const allPayments = (paymentsRes.data || []) as unknown as Payment[]
@@ -111,8 +111,8 @@ export default function PaymentsPage() {
             <tbody>
               {payments.map(p => (
                 <tr key={p.id}>
-                  <td className="cell-primary">{p.contact ? `${p.contact.first_name} ${p.contact.last_name || ''}` : '—'}</td>
-                  <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{p.invoice?.invoice_number || '—'}</span></td>
+                  <td className="cell-primary">{p.jb_contacts ? `${p.jb_contacts.first_name} ${p.jb_contacts.last_name || ''}` : '—'}</td>
+                  <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#7A8072' }}>{p.jb_invoices?.invoice_number || '—'}</span></td>
                   <td style={{ fontWeight: 700 }}>${Number(p.amount).toLocaleString()}</td>
                   <td style={{ textTransform: 'capitalize' }}>{p.payment_method || '—'}</td>
                   <td>{new Date(p.created_at).toLocaleDateString()}</td>
