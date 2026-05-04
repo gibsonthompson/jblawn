@@ -1,5 +1,14 @@
-// Static blog posts - no Supabase dependency
-// Will be replaced with blog-farm Supabase client when wired up
+import { createClient } from '@supabase/supabase-js'
+
+// Blog-farm Supabase client (same instance as CRM)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// Business ID for JB Lawn Care in blog_businesses table
+// Set in env to avoid hardcoding — falls back to slug lookup
+const BUSINESS_SLUG = 'jb-lawn'
 
 export type BlogPost = {
   slug: string
@@ -15,7 +24,68 @@ export type BlogPost = {
   keyword_target: string | null
 }
 
-const POSTS: BlogPost[] = [
+export const CATEGORY_LABELS: Record<string, string> = {
+  'lawn-care': 'Lawn Care',
+  'junk-removal': 'Junk Removal',
+  'landscaping': 'Landscaping',
+  'seasonal': 'Seasonal',
+  'yard-cleanup': 'Yard Cleanup',
+  'hauling': 'Hauling',
+  'local-guide': 'Local Guide',
+  'tips': 'Tips',
+  'general': 'General',
+}
+
+// ── Supabase queries ──
+
+async function getBusinessId(): Promise<string | null> {
+  try {
+    const { data } = await supabase
+      .from('blog_businesses')
+      .select('id')
+      .eq('slug', BUSINESS_SLUG)
+      .single()
+    return data?.id || null
+  } catch {
+    return null
+  }
+}
+
+async function getGeneratedPosts(): Promise<BlogPost[]> {
+  try {
+    const bizId = await getBusinessId()
+    if (!bizId) return []
+
+    const { data, error } = await supabase
+      .from('blog_generated_posts')
+      .select('slug, title, meta_description, excerpt, html_content, category, primary_keyword, word_count, publish_date')
+      .eq('business_id', bizId)
+      .eq('status', 'published')
+      .order('publish_date', { ascending: false })
+
+    if (error || !data) return []
+
+    return data.map(post => ({
+      slug: post.slug,
+      title: post.title,
+      meta_description: post.meta_description || '',
+      excerpt: post.excerpt || post.meta_description || '',
+      content: post.html_content,
+      category: post.category || 'general',
+      author: 'Jose Bejines',
+      published_at: post.publish_date ? `${post.publish_date}T12:00:00Z` : new Date().toISOString(),
+      featured_image: null,
+      word_count: post.word_count,
+      keyword_target: post.primary_keyword,
+    }))
+  } catch {
+    return []
+  }
+}
+
+// ── Seed posts (existing hardcoded content — shown until blog farm takes over) ──
+
+const SEED_POSTS: BlogPost[] = [
   {
     slug: 'how-often-should-you-mow-your-lawn-bay-area',
     title: 'How Often Should You Mow Your Lawn in the Bay Area?',
@@ -148,24 +218,31 @@ const POSTS: BlogPost[] = [
   },
 ]
 
+// ── Public API ──
+
 export async function getAllPosts(): Promise<BlogPost[]> {
-  return POSTS
+  const generated = await getGeneratedPosts()
+
+  // Merge: generated posts first (newest), then seed posts that aren't duplicated
+  const generatedSlugs = new Set(generated.map(p => p.slug))
+  const uniqueSeeds = SEED_POSTS.filter(p => !generatedSlugs.has(p.slug))
+
+  return [...generated, ...uniqueSeeds].sort(
+    (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+  )
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  return POSTS.find(p => p.slug === slug) || null
+  // Check generated first
+  const generated = await getGeneratedPosts()
+  const found = generated.find(p => p.slug === slug)
+  if (found) return found
+
+  // Fall back to seeds
+  return SEED_POSTS.find(p => p.slug === slug) || null
 }
 
 export async function getPostSlugs(): Promise<string[]> {
-  return POSTS.map(p => p.slug)
-}
-
-export const CATEGORY_LABELS: Record<string, string> = {
-  'lawn-care': 'Lawn Care',
-  'junk-removal': 'Junk Removal',
-  'landscaping': 'Landscaping',
-  'seasonal': 'Seasonal',
-  'yard-cleanup': 'Yard Cleanup',
-  'tips': 'Tips',
-  'general': 'General',
+  const all = await getAllPosts()
+  return all.map(p => p.slug)
 }
