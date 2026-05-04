@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Blog-farm Supabase client (same instance as CRM)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Blog-farm Supabase (separate instance from JB's CRM database)
+// JB CRM = szdrpdjyordvqtkuuazh (jb_reviews, jb_services, etc.)
+// Blog farm = oschjeuhejqibymdaqxw (blog_businesses, blog_generated_posts, etc.)
+const blogFarmSupabase = createClient(
+  process.env.BLOG_FARM_SUPABASE_URL!,
+  process.env.BLOG_FARM_SUPABASE_KEY!
 )
 
 // Business ID for JB Lawn Care in blog_businesses table
@@ -40,7 +42,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
 
 async function getBusinessId(): Promise<string | null> {
   try {
-    const { data } = await supabase
+    const { data } = await blogFarmSupabase
       .from('blog_businesses')
       .select('id')
       .eq('slug', BUSINESS_SLUG)
@@ -56,7 +58,7 @@ async function getGeneratedPosts(): Promise<BlogPost[]> {
     const bizId = await getBusinessId()
     if (!bizId) return []
 
-    const { data, error } = await supabase
+    const { data, error } = await blogFarmSupabase
       .from('blog_generated_posts')
       .select('slug, title, meta_description, excerpt, html_content, category, primary_keyword, word_count, publish_date')
       .eq('business_id', bizId)
