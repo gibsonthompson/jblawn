@@ -1,12 +1,19 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Blog-farm Supabase (separate instance from JB's CRM database)
 // JB CRM = szdrpdjyordvqtkuuazh (jb_reviews, jb_services, etc.)
 // Blog farm = oschjeuhejqibymdaqxw (blog_businesses, blog_generated_posts, etc.)
-const blogFarmSupabase = createClient(
-  process.env.BLOG_FARM_SUPABASE_URL!,
-  process.env.BLOG_FARM_SUPABASE_KEY!
-)
+// Lazy-initialized: only connects when server-side functions call it.
+// This prevents errors when client components import types/constants from this file.
+let _client: SupabaseClient | null = null
+function getBlogFarmClient(): SupabaseClient | null {
+  if (_client) return _client
+  const url = process.env.BLOG_FARM_SUPABASE_URL
+  const key = process.env.BLOG_FARM_SUPABASE_KEY
+  if (!url || !key) return null // Client-side or env vars missing — return null, functions fall back to seed posts
+  _client = createClient(url, key)
+  return _client
+}
 
 // Business ID for JB Lawn Care in blog_businesses table
 // Set in env to avoid hardcoding — falls back to slug lookup
@@ -42,7 +49,9 @@ export const CATEGORY_LABELS: Record<string, string> = {
 
 async function getBusinessId(): Promise<string | null> {
   try {
-    const { data } = await blogFarmSupabase
+    const client = getBlogFarmClient()
+    if (!client) return null
+    const { data } = await client
       .from('blog_businesses')
       .select('id')
       .eq('slug', BUSINESS_SLUG)
@@ -55,10 +64,13 @@ async function getBusinessId(): Promise<string | null> {
 
 async function getGeneratedPosts(): Promise<BlogPost[]> {
   try {
+    const client = getBlogFarmClient()
+    if (!client) return []
+
     const bizId = await getBusinessId()
     if (!bizId) return []
 
-    const { data, error } = await blogFarmSupabase
+    const { data, error } = await client
       .from('blog_generated_posts')
       .select('slug, title, meta_description, excerpt, html_content, category, primary_keyword, word_count, publish_date')
       .eq('business_id', bizId)
