@@ -6,11 +6,12 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 const telnyxApiKey = process.env.TELNYX_API_KEY || ''
 const telnyxFromNumber = process.env.TELNYX_FROM_NUMBER || ''
 const jbPhone = process.env.JB_NOTIFICATION_PHONE || '3412600331'
+const gibsonPhone = '6783161454'
 
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
-async function sendSMS(to: string, text: string): Promise<boolean> {
-  if (!telnyxApiKey || !telnyxFromNumber) return false
+async function sendSMS(to: string, text: string): Promise<{ sent: boolean; error?: string }> {
+  if (!telnyxApiKey || !telnyxFromNumber) return { sent: false, error: 'Missing Telnyx credentials' }
   const cleanTo = to.replace(/\D/g, '')
   const toFmt = cleanTo.startsWith('1') ? `+${cleanTo}` : `+1${cleanTo}`
   const fromFmt = telnyxFromNumber.startsWith('+') ? telnyxFromNumber : `+${telnyxFromNumber}`
@@ -20,9 +21,17 @@ async function sendSMS(to: string, text: string): Promise<boolean> {
       headers: { 'Authorization': `Bearer ${telnyxApiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ from: fromFmt, to: toFmt, text }),
     })
-    if (!res.ok) { console.error('[SMS FAILED]', await res.text()); return false }
-    return true
-  } catch (err) { console.error('[SMS ERROR]', err); return false }
+    if (!res.ok) {
+      const errText = await res.text()
+      console.error(`[SMS FAILED] to=${to}`, errText)
+      return { sent: false, error: errText }
+    }
+    console.log(`[SMS SENT] to=${to} (${text.length} chars)`)
+    return { sent: true }
+  } catch (err) {
+    console.error(`[SMS ERROR] to=${to}`, err)
+    return { sent: false, error: String(err) }
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -32,6 +41,20 @@ export async function POST(request: NextRequest) {
 
     if (!first_name || !phone || !service_requested || !address || !preferred_date || !preferred_time) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Server-side date validation — reject past dates
+    const now = new Date()
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    if (preferred_date <= todayStr) {
+      return NextResponse.json({ error: 'Preferred date must be in the future (tomorrow or later)' }, { status: 400 })
+    }
+
+    const maxDate = new Date(now)
+    maxDate.setDate(maxDate.getDate() + 90)
+    const maxDateStr = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`
+    if (preferred_date > maxDateStr) {
+      return NextResponse.json({ error: 'Preferred date cannot be more than 90 days out' }, { status: 400 })
     }
 
     const cleanPhone = phone.replace(/\D/g, '')
@@ -57,10 +80,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Business SMS — immediately
-    await sendSMS(jbPhone, `NEW BOOKING\n${first_name} ${last_name || ''}\nPhone: ${phone}\nService: ${service_requested}\nAddress: ${address}\nDate: ${preferred_date} ${preferred_time}${details ? `\nDetails: ${details}` : ''}\n\nCall ASAP!`)
+    // Business notification — send to both JB and Gibson simultaneously
+    const bookingMsg = `NEW BOOKING\n${first_name} ${last_name || ''}\nPhone: ${phone}\nService: ${service_requested}\nAddress: ${address}\nDate: ${preferred_date} ${preferred_time}${details ? `\nDetails: ${details}` : ''}\n\nCall ASAP!`
 
-    // Return data for delayed customer SMS
+    const [jbResult, gibsonResult] = await Promise.all([
+      sendSMS(jbPhone, bookingMsg),
+      sendSMS(gibsonPhone, bookingMsg),
+    ])
+
+    // If JB's SMS failed, send Gibson a heads-up so nothing falls through the cracks
+    if (!jbResult.sent) {
+      await sendSMS(gibsonPhone, `⚠️ SMS to JB (${jbPhone}) FAILED for booking from ${first_name} ${last_name || ''} — ${phone}. Follow up manually.`)
+    }
+
     return NextResponse.json({ success: true, smsData: { phone: cleanPhone, first_name, service_requested } })
   } catch (err) {
     console.error('[BOOKING API ERROR]', err)
