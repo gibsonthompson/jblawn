@@ -279,6 +279,118 @@ export const AREAS_DATA: Record<string, AreaData> = {
       { q: 'Is Daly City too far from your service area?', a: 'Not at all. We service Daly City regularly, typically on the same days as our San Francisco runs.' },
     ],
   },
+  'union-city': {
+    slug: 'union-city',
+    city: 'Union City',
+    metaTitle: 'Lawn Care & Junk Removal in Union City, CA | JB Lawn Care & Hauling',
+    metaDescription: 'Professional lawn mowing, junk removal, landscaping, and yard cleanup in Union City, CA. Serving Decoto, Alvarado & more. Fully insured. Call 341-260-0331.',
+    headline: 'Lawn Care & Junk Removal in Union City, CA',
+    intro: "Union City sits right between Hayward and Fremont, smack in the middle of our busiest service corridor. That means Union City homeowners get some of our fastest response times and most consistent scheduling. From the established homes in Decoto to the newer developments near Union Landing, JB Lawn Care handles weekly mowing, junk removal, yard cleanups, and landscaping for Union City residents who want dependable service without the runaround.",
+    cityDetails: "Union City's housing is a mix of 1960s-70s tract homes in the Decoto and Alvarado districts and newer construction closer to the BART station and Union Landing shopping area. Lots tend to be modest suburban size with both front and back yards. Many Union City families have busy schedules and simply want a reliable crew that shows up the same day every week and keeps things looking sharp. We also see steady demand for junk hauling here, garage cleanouts, old furniture and appliance removal, and yard debris clearing after home projects. The flat terrain makes most jobs straightforward and efficient.",
+    popularServices: [
+      { name: 'Lawn Mowing & Maintenance', slug: 'lawn-mowing', why: 'Union City\'s suburban lots are ideal for weekly and bi-weekly mowing plans, our most-requested service in the area.' },
+      { name: 'Junk Removal & Hauling', slug: 'junk-hauling', why: 'Garage and yard cleanouts drive steady junk removal demand across Union City\'s residential neighborhoods.' },
+      { name: 'Yard Cleanup & Debris', slug: 'yard-cleanup', why: 'Seasonal cleanups and post-project debris removal keep Union City properties looking maintained year-round.' },
+    ],
+    neighborhoods: ['Decoto', 'Alvarado', 'Union Landing', 'New Haven', 'Old Alvarado', 'Cabello'],
+    distanceNote: 'Union City is central to our service corridor between Hayward and Fremont, we have crews passing through nearly every day, so response times are fast.',
+    testimonial: { text: "Signed up for bi-weekly mowing and it's been flawless. Same crew, same day, yard always looks great. They even hauled off a bunch of old fence boards I had piled up without me having to ask twice.", name: 'David L.', location: 'Union City, CA' },
+    faqs: [
+      { q: 'How quickly can you get to Union City?', a: 'Union City is right in the middle of our Hayward-to-Fremont route, so we\'re in the area almost daily. Same-day junk removal is usually available when booked before noon, and scheduled mowing is next-day in most cases.' },
+      { q: 'Do you offer recurring mowing in Union City?', a: 'Yes. Weekly and bi-weekly plans are our most popular Union City service. You get a consistent crew and service day so you always know when to expect us.' },
+      { q: 'Can you clear out a garage or yard in Union City?', a: 'Absolutely. Garage cleanouts, furniture and appliance removal, and yard debris clearing are common Union City jobs. We provide an exact quote before we start and haul everything away.' },
+    ],
+  },
+
+  'castro-valley': {
+    slug: 'castro-valley',
+    city: 'Castro Valley',
+    metaTitle: 'Lawn Care & Yard Cleanup in Castro Valley, CA | JB Lawn Care & Hauling',
+    metaDescription: 'Professional lawn mowing, brush clearing, junk removal, and landscaping in Castro Valley, CA. Serving Palomares, Five Canyons & the hills. Call 341-260-0331.',
+    headline: 'Lawn Care & Brush Clearing in Castro Valley, CA',
+    intro: "Castro Valley's semi-rural character (larger lots, wooded hillsides, and canyon properties) creates maintenance needs you won't find in the flatland cities. JB Lawn Care serves Castro Valley homeowners with lawn mowing, brush clearing, junk removal, and landscaping tailored to the area's terrain. Whether you're on a standard lot in the Village or a hillside acre off Palomares Road, we've got the equipment and know-how to keep your property clean and fire-safe.",
+    cityDetails: "Castro Valley spans everything from the walkable downtown Village to the sprawling hillside and canyon properties toward Palomares and Five Canyons. The unincorporated hill areas often carry real fire risk, so brush clearing and vegetation management are among our most important Castro Valley services, we help homeowners meet defensible-space requirements and haul all cleared material away. Down in the flatter neighborhoods, properties tend to have generous yards with mature landscaping that needs regular mowing, trimming, and seasonal cleanup. Larger lots also mean more green waste, which is where our hauling and debris removal come in.",
+    popularServices: [
+      { name: 'Yard Cleanup & Debris', slug: 'yard-cleanup', why: 'Castro Valley\'s larger, often wooded lots generate significant brush and debris, especially heading into fire season.' },
+      { name: 'Lawn Mowing & Maintenance', slug: 'lawn-mowing', why: 'The generous yards in Castro Valley\'s flatter neighborhoods need consistent mowing to stay looking sharp.' },
+      { name: 'Bush & Hedge Trimming', slug: 'bush-trimming', why: 'Mature plantings and hillside vegetation require regular trimming to stay controlled and safe.' },
+    ],
+    neighborhoods: ['The Village', 'Palomares', 'Five Canyons', 'Proctor', 'Jensen Ranch', 'Chabot Park', 'Redwood Canyon'],
+    distanceNote: 'Castro Valley is about 15-20 minutes from our base. We service the area regularly, including the hillside and canyon properties that need specialized access.',
+    faqs: [
+      { q: 'Do you do fire hazard brush clearing in Castro Valley?', a: 'Yes. Many Castro Valley hill and canyon properties need defensible-space clearing. We remove brush, dead vegetation, and overgrowth to help you meet fire safety requirements, and we haul all of it away.' },
+      { q: 'Can you handle large hillside lots off Palomares?', a: 'Absolutely. We\'re equipped for steep terrain and larger acreage. We regularly work the hillside and canyon properties around Palomares, Five Canyons, and Redwood Canyon.' },
+      { q: 'How much does yard cleanup cost in Castro Valley?', a: 'It depends on lot size and how much material needs clearing, but most Castro Valley cleanups range from a couple hundred dollars for a standard yard to more for overgrown hillside acreage. We always quote the exact price before starting.' },
+    ],
+  },
+
+  'san-lorenzo': {
+    slug: 'san-lorenzo',
+    city: 'San Lorenzo',
+    metaTitle: 'Lawn Mowing & Junk Removal in San Lorenzo, CA | JB Lawn Care & Hauling',
+    metaDescription: 'Reliable lawn mowing, junk removal, and yard cleanup in San Lorenzo, CA. Serving the Village, Hesperian & Ashland border. Free estimates. Call 341-260-0331.',
+    headline: 'Lawn Care & Hauling in San Lorenzo, CA',
+    intro: "San Lorenzo is one of our closest and most-served communities, tucked between San Leandro and Hayward. The area's classic post-war homes and tight-knit neighborhoods mean curb appeal matters, and JB Lawn Care keeps San Lorenzo properties looking their best with regular mowing, junk removal, yard cleanups, and mulching. Because we're right nearby, San Lorenzo residents get quick response times and same-day availability on most jobs.",
+    cityDetails: "San Lorenzo is known for its historic San Lorenzo Village, one of the earliest planned suburban communities in the country, with rows of well-kept mid-century homes on modest, uniform lots. These properties look fantastic when maintained and noticeably rough when they're not, since the houses sit close together and every yard is visible. That makes regular mowing, edging, and hedge trimming especially valuable here. We also handle a lot of junk removal for San Lorenzo homeowners clearing out garages, sheds, and decades of accumulated stuff, plus fresh mulch and bed cleanups that instantly update the look of these older properties.",
+    popularServices: [
+      { name: 'Lawn Mowing & Maintenance', slug: 'lawn-mowing', why: 'San Lorenzo Village\'s close-set homes make regular mowing essential, every yard is visible from the street.' },
+      { name: 'Junk Removal & Hauling', slug: 'junk-hauling', why: 'Garage and shed cleanouts are a constant need in San Lorenzo\'s established mid-century neighborhoods.' },
+      { name: 'Mulching & Bed Maintenance', slug: 'mulching', why: 'Fresh mulch and clean beds are a fast, affordable way to refresh San Lorenzo\'s older landscaping.' },
+    ],
+    neighborhoods: ['San Lorenzo Village', 'Hesperian corridor', 'Washington Manor border', 'Bockman', 'Lorenzo Manor', 'Ashland border'],
+    distanceNote: 'San Lorenzo is minutes from our base, bordering San Leandro. Response times are among our fastest and same-day service is almost always available.',
+    faqs: [
+      { q: 'How fast can you get to San Lorenzo?', a: 'Very fast, San Lorenzo borders our home base. Same-day service is almost always available for junk removal, and scheduled mowing is typically next-day.' },
+      { q: 'Do you maintain homes in San Lorenzo Village?', a: 'Yes, the Village is one of our core San Lorenzo areas. We know the uniform lot layouts well and keep the close-set homes looking clean with regular mowing, edging, and trimming.' },
+      { q: 'Can you refresh old landscaping in San Lorenzo?', a: 'Absolutely. Fresh mulch, cleaned-up beds, and trimmed hedges do wonders for San Lorenzo\'s older mid-century properties. We can transform the look of a tired yard in a single visit.' },
+    ],
+  },
+
+  'alameda': {
+    slug: 'alameda',
+    city: 'Alameda',
+    metaTitle: 'Lawn Care & Junk Removal in Alameda, CA | JB Lawn Care & Hauling',
+    metaDescription: 'Professional lawn mowing, junk removal, hedge trimming, and yard cleanup in Alameda, CA. Serving the Gold Coast, Bay Farm & West End. Call 341-260-0331.',
+    headline: 'Lawn Care & Junk Removal on Alameda Island, CA',
+    intro: "Alameda's island setting, historic Victorians, and tree-lined streets give it a character all its own, plus a set of maintenance needs that reward a crew who understands the area. JB Lawn Care serves Alameda homeowners with lawn mowing, junk removal, hedge trimming, and yard cleanups across the whole island, from the stately Gold Coast homes to the newer Bay Farm developments. We know the bridges, the parking, and the tight Victorian side yards that make Alameda jobs a little different.",
+    cityDetails: "Alameda is a true island, connected by bridges and a tube, and that geography shapes how we work here. The Gold Coast and East End are full of beautifully preserved Victorian and Edwardian homes with mature gardens, ornate hedges, and narrow side yards that need careful, detail-oriented maintenance. The West End and Bay Farm Island have a mix of mid-century homes and newer developments with more standard suburban yards. Salt air and the island's mild, breezy climate keep lawns growing steadily much of the year. Junk removal is a frequent request too, especially for the older homes where basements, garages, and side yards accumulate decades of belongings.",
+    popularServices: [
+      { name: 'Lawn Mowing & Maintenance', slug: 'lawn-mowing', why: 'Alameda\'s mild island climate keeps grass growing much of the year, making regular mowing a steady need across the island.' },
+      { name: 'Bush & Hedge Trimming', slug: 'bush-trimming', why: 'Alameda\'s historic homes feature ornate, mature hedges that need skilled, regular trimming to keep their shape.' },
+      { name: 'Junk Removal & Hauling', slug: 'junk-hauling', why: 'Older Alameda homes with basements and garages generate frequent cleanout and hauling requests.' },
+    ],
+    neighborhoods: ['Gold Coast', 'East End', 'West End', 'Bay Farm Island', 'Bronze Coast', 'Fernside', 'Marina Village', 'Alameda Point'],
+    distanceNote: 'Alameda is just across the estuary, about 15-20 minutes from our base via the Park Street or High Street bridges. We service the island regularly.',
+    testimonial: { text: "Our Victorian has these huge old hedges and a really tight side yard that other companies wouldn't touch. JB's crew handled it perfectly and cleaned up every last clipping. Finally found people who get it.", name: 'Ellen S.', location: 'Alameda, CA' },
+    faqs: [
+      { q: 'Do you service all of Alameda Island?', a: 'Yes, from the Gold Coast and East End to the West End and Bay Farm Island. We cross the bridges regularly and know how to handle the island\'s parking and access.' },
+      { q: 'Can you work on Alameda\'s historic homes with narrow access?', a: 'Absolutely. Tight Victorian side yards and narrow access are common on Alameda, and our crew is experienced with them. We bring appropriately sized equipment and take care around older homes and gardens.' },
+      { q: 'Do you handle the mature hedges on older Alameda properties?', a: 'Yes. Shaping and maintaining the ornate, established hedges on Alameda\'s historic homes is one of our specialties here. Regular trimming keeps them healthy and looking their best.' },
+    ],
+  },
+
+  'vallejo': {
+    slug: 'vallejo',
+    city: 'Vallejo',
+    metaTitle: 'Lawn Care & Junk Removal in Vallejo, CA | JB Lawn Care & Hauling',
+    metaDescription: 'Lawn mowing, junk removal, yard cleanup, and landscaping in Vallejo, CA. Serving Glen Cove, Hiddenbrooke & downtown. Free estimates. Call 341-260-0331.',
+    headline: 'Lawn Care & Junk Removal in Vallejo, CA',
+    intro: "Vallejo homeowners have long had trouble finding a lawn and hauling crew willing to make the trip and actually show up reliably. JB Lawn Care serves Vallejo with dependable mowing, junk removal, yard cleanups, and landscaping, we schedule Vallejo jobs on dedicated route days so you get consistent, on-time service. From the waterfront homes in Glen Cove to the hillside neighborhoods of Hiddenbrooke, we keep Vallejo properties clean and well-maintained.",
+    cityDetails: "Vallejo's varied terrain runs from the historic downtown and waterfront near the Mare Island strait to the newer hillside developments in Hiddenbrooke and the established neighborhoods around Glen Cove. Housing ranges from classic older homes with mature yards to modern tract developments with designed landscapes. The Solano County climate runs warmer and drier than the inner East Bay, so lawns need proper mowing height and watering guidance to stay green through summer. We handle a healthy mix of recurring mowing, full-property cleanouts for the area's active real estate and rental market, and landscaping for homeowners upgrading their outdoor spaces. Because Vallejo is a bit farther out, we group jobs onto set days to keep service reliable and efficient.",
+    popularServices: [
+      { name: 'Lawn Mowing & Maintenance', slug: 'lawn-mowing', why: 'Vallejo\'s warm, dry summers make proper mowing height and frequency essential to keep lawns from browning out.' },
+      { name: 'Junk Removal & Hauling', slug: 'junk-hauling', why: 'Vallejo\'s active rental and resale market keeps demand high for property cleanouts and junk hauling.' },
+      { name: 'Landscaping & Sod Installation', slug: 'landscaping', why: 'Vallejo homeowners frequently upgrade to fresh sod or drought-tolerant landscaping to handle the drier Solano climate.' },
+    ],
+    neighborhoods: ['Glen Cove', 'Hiddenbrooke', 'Mare Island', 'Downtown Vallejo', 'Country Club Crest', 'St. Vincent Hill', 'Vallejo Heights'],
+    distanceNote: 'Vallejo is farther out than most of our service area, roughly 40-50 minutes north across the Carquinez Bridge. We schedule Vallejo jobs on dedicated route days to keep service reliable and on-time, so a little advance notice helps us fit you in.',
+    faqs: [
+      { q: 'Do you really service Vallejo? It seems far.', a: 'Yes, we service Vallejo regularly. It\'s farther out than the East Bay, so we group Vallejo jobs onto dedicated route days rather than one-off trips. Book a little ahead and we\'ll get you on the schedule, the service is just as reliable as anywhere else we work.' },
+      { q: 'How do you handle Vallejo\'s hotter, drier climate?', a: 'We raise mowing height during summer to protect lawns from heat stress and recommend watering schedules suited to the Solano County climate. For lawns that struggle in the heat, we can install drought-tolerant landscaping or fresh sod.' },
+      { q: 'Can you do a full property cleanout in Vallejo?', a: 'Absolutely. Full cleanouts for resale, rental turnovers, and estate clearing are common Vallejo jobs. We haul away everything, multiple truckloads in a day if needed, and leave the property clean.' },
+    ],
+  },
+
 }
 
 export const AREA_SLUGS = Object.keys(AREAS_DATA)

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useBooking } from '../../../../components/BookingContext'
-import type { AreaData } from '../../../../lib/areas-data'
+import { AREAS_DATA, type AreaData } from '../../../../lib/areas-data'
 
 export default function AreaPageClient({ area }: { area: AreaData }) {
   const { openBooking } = useBooking()
@@ -16,6 +16,9 @@ export default function AreaPageClient({ area }: { area: AreaData }) {
     document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
+
+  // All other service areas, pulled from AREAS_DATA so new cities appear automatically
+  const otherAreas = Object.values(AREAS_DATA).filter((a) => a.slug !== area.slug)
 
   return (
     <>
@@ -105,7 +108,7 @@ export default function AreaPageClient({ area }: { area: AreaData }) {
       <section className="section" style={{ background: 'var(--off-white)' }}>
         <div className="container">
           <div className="section-header center fade-in">
-            <h2 className="section-title">Common Questions — {area.city}</h2>
+            <h2 className="section-title">Common Questions ({area.city})</h2>
           </div>
           <div className="fade-in" style={{ maxWidth: 720, margin: '0 auto' }}>
             {area.faqs.map((faq, i) => (
@@ -127,7 +130,7 @@ export default function AreaPageClient({ area }: { area: AreaData }) {
       {/* CTA */}
       <section className="cta-banner">
         <h2>Need Lawn Care or Junk Removal<br />in {area.city}?</h2>
-        <p>Get a free estimate — most quotes returned within the hour. Same-day service available.</p>
+        <p>Get a free estimate. Most quotes returned within the hour. Same-day service available.</p>
         <button className="btn-white" onClick={openBooking}>
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Book Your Free Estimate
@@ -140,13 +143,11 @@ export default function AreaPageClient({ area }: { area: AreaData }) {
           <div className="fade-in" style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '0.95rem', color: 'var(--gray-mid)', marginBottom: 16 }}>We also serve these Bay Area cities:</p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-              {['Oakland','San Francisco','Berkeley','Richmond','Hayward','Fremont','San Leandro','Concord','Walnut Creek','Pleasanton','Dublin','Daly City']
-                .filter(c => c.toLowerCase().replace(/\s+/g, '-') !== area.slug)
-                .map((c) => (
-                  <Link key={c} href={`/areas/${c.toLowerCase().replace(/\s+/g, '-')}`} className="area-tag" style={{ padding: '10px 18px' }}>
-                    {c}
-                  </Link>
-                ))}
+              {otherAreas.map((a) => (
+                <Link key={a.slug} href={`/areas/${a.slug}`} className="area-tag" style={{ padding: '10px 18px' }}>
+                  {a.city}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

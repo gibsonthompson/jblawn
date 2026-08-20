@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { AREAS_DATA, AREA_SLUGS } from '../../../../lib/areas-data'
 import AreaPageClient from './AreaPageClient'
 
+const BASE_URL = 'https://jblawncareandhualing.com'
+
 export function generateStaticParams() {
   return AREA_SLUGS.map((city) => ({ city }))
 }
@@ -11,8 +13,20 @@ export function generateMetadata({ params }: { params: { city: string } }): Meta
   const area = AREAS_DATA[params.city]
   if (!area) return {}
   return {
+    metadataBase: new URL(BASE_URL),
     title: area.metaTitle,
     description: area.metaDescription,
+    alternates: {
+      canonical: `/areas/${area.slug}`,
+    },
+    openGraph: {
+      title: area.metaTitle,
+      description: area.metaDescription,
+      url: `${BASE_URL}/areas/${area.slug}`,
+      siteName: 'JB Lawn Care & Hauling',
+      locale: 'en_US',
+      type: 'website',
+    },
   }
 }
 
@@ -23,8 +37,16 @@ export default function AreaPage({ params }: { params: { city: string } }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "@id": `${BASE_URL}/#business`,
     "name": "JB Lawn Care & Hauling",
+    "url": BASE_URL,
     "telephone": "341-260-0331",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressRegion": "CA",
+      "addressCountry": "US",
+    },
     "areaServed": {
       "@type": "City",
       "name": area.city,
