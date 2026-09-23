@@ -57,6 +57,12 @@ const SERVICES = [
     description: "Need to haul it yourself? Rent our 10-yard dump trailer starting at $150/day. Drop-off, pickup, and disposal included in our full-service option at $400.",
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="1" y="6" width="15" height="10" rx="1"/><path d="M16 10h4l3 3v3h-7V10z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M1 14h15"/></svg>,
   },
+  {
+    title: 'Pressure Washing',
+    href: '/services/pressure-washing',
+    description: "Driveways, siding, decks, patios, fences, and roofs, cleaned right. High-pressure washing for hard surfaces and gentle soft washing for delicate ones. Residential and commercial across the East Bay.",
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21h6v-2a3 3 0 013-3h1V9"/><path d="M13 9V4a1 1 0 011-1h1l5 3v3z"/><path d="M13 6l-4-1"/><path d="M18 12l2 1M18 15l3 1M18 18l2 1"/></svg>,
+  },
 ]
 
 const SERVICE_AREAS = [
@@ -167,6 +173,7 @@ export default function HomePage() {
             { "@type": "Question", "name": "What areas does JB Lawn Care serve?", "acceptedAnswer": { "@type": "Answer", "text": "JB Lawn Care & Hauling serves Oakland, Berkeley, Richmond, Hayward, Fremont, San Leandro, Concord, Walnut Creek, Pleasanton, Dublin, and the greater Bay Area." }},
             { "@type": "Question", "name": "Is it cheaper to hire a junk removal company or rent a dumpster?", "acceptedAnswer": { "@type": "Answer", "text": "In most cases, hiring a junk removal crew is cheaper when you factor in dumpster rental fees, permits, disposal costs, and labor." }},
             { "@type": "Question", "name": "Can I rent a dump trailer in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers a 10-yard dump trailer for $150/day for DIY projects, or $400 for full-service including drop-off, pickup, and up to 1 ton of disposal. Available from Hayward to Vallejo." }},
+            { "@type": "Question", "name": "Do you do pressure washing in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers pressure washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay." }},
           ]
         })}}
       />
@@ -478,6 +485,10 @@ export default function HomePage() {
               {
                 q: 'Can I rent a dump trailer instead?',
                 a: 'Yes. We offer a 10-yard dump trailer for rent at $150/day for DIY projects, or $400 for full-service (drop-off, pickup, and up to 1 ton of disposal included). Available from Hayward to Vallejo.',
+              },
+              {
+                q: 'Do you do pressure washing?',
+                a: 'Yes. We offer pressure washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay. Hard surfaces get high-pressure washing and delicate ones get gentle soft washing so nothing is damaged.',
               },
             ].map((faq, i) => (
               <details key={i} style={{

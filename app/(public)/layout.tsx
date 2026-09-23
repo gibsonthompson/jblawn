@@ -63,6 +63,7 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
                 <Link href="/services/bush-trimming">Bush &amp; Hedge Trimming</Link>
                 <Link href="/services/mulching">Mulching &amp; Bed Care</Link>
                 <Link href="/services/trailer-rental">Dump Trailer Rental</Link>
+                <Link href="/services/pressure-washing">Pressure Washing</Link>
               </div>
             </li>
             <li className={`dropdown${openDropdown === 'areas' ? ' open' : ''}`}>
@@ -102,6 +103,7 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
         <Link href="/services/bush-trimming" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Bush &amp; Hedge Trimming</Link>
         <Link href="/services/mulching" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Mulching &amp; Bed Care</Link>
         <Link href="/services/trailer-rental" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Dump Trailer Rental</Link>
+        <Link href="/services/pressure-washing" className="mobile-sub" onClick={() => setMobileNavOpen(false)}>Pressure Washing</Link>
         <Link href="/gallery" onClick={() => setMobileNavOpen(false)}>Gallery</Link>
         <Link href="/blog" onClick={() => setMobileNavOpen(false)}>Blog</Link>
         <Link href="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
@@ -135,6 +137,7 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
               <li><Link href="/services/bush-trimming">Bush Trimming</Link></li>
               <li><Link href="/services/mulching">Mulching</Link></li>
               <li><Link href="/services/trailer-rental">Trailer Rental</Link></li>
+              <li><Link href="/services/pressure-washing">Pressure Washing</Link></li>
             </ul>
           </div>
           <div className="footer-col">
