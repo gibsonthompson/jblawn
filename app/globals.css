@@ -513,9 +513,14 @@ body {
 /* ========== SERVICES ========== */
 .services { background: var(--white); }
 .services-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 24px;
+  justify-content: center;
+}
+.services-grid .service-card {
+  flex: 0 1 calc((100% - 48px) / 3);
+  max-width: calc((100% - 48px) / 3);
 }
 .service-card {
   background: var(--off-white);
@@ -580,8 +585,17 @@ body {
 }
 .service-card:hover .service-link { gap: 10px; }
 
+@media (max-width: 1000px) {
+  .services-grid .service-card {
+    flex-basis: calc((100% - 24px) / 2);
+    max-width: calc((100% - 24px) / 2);
+  }
+}
 @media (max-width: 900px) {
-  .services-grid { grid-template-columns: 1fr; }
+  .services-grid .service-card {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
 }
 
 /* ========== WHY US ========== */

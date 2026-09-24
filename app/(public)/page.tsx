@@ -19,49 +19,49 @@ const SERVICES = [
     title: 'Lawn Mowing & Maintenance',
     href: '/services/lawn-mowing',
     description: 'Professional lawn mowing for residential and commercial properties. Weekly, bi-weekly, or one-time cuts including edging, trimming, and blowing. Serving Oakland, Berkeley, Hayward, and surrounding cities.',
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="12" width="9" height="5" rx="1"/><circle cx="4.5" cy="19" r="1.5"/><circle cx="8.5" cy="19" r="1.5"/><path d="M11 12l4-6 6 2"/><path d="M15 6l-2-1"/><path d="M3 12V9h4v3"/></svg>,
   },
   {
     title: 'Landscaping & Sod Installation',
     href: '/services/landscaping',
     description: 'Complete landscape transformations — sod installation, flower beds, hardscaping, and drainage grading. We take Bay Area yards from neglected to neighborhood standout.',
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0020 0h-3"/><path d="M5.24 17a5 5 0 01-.24-1.5C5 12.46 8.13 10 12 10s7 2.46 7 5.5a5 5 0 01-.24 1.5"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3l6 6"/><path d="M18 6l-7 7"/><path d="M11 13l-2 2 1 1 2-2"/><path d="M6 21c0-3 1.5-5 4-5"/><path d="M6 21c0-2-1-3.5-3-4"/><path d="M6 21v-3"/></svg>,
   },
   {
     title: 'Junk Removal & Hauling',
     href: '/services/junk-hauling',
     description: "Same-day junk removal across the East Bay. Old furniture, appliances, construction debris, yard waste — we load it, haul it, and dispose of it. Often cheaper than renting a dumpster.",
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M2 16V9l9-2 2 5H2z"/><path d="M13 16v-4h4l3 3v1"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M8 18h7"/></svg>,
   },
   {
     title: 'Yard Cleanup & Debris Removal',
     href: '/services/yard-cleanup',
     description: "Overgrown lot, storm damage, or pre-sale property prep — we clear brush, weeds, branches, and debris so your outdoor space is usable again. Residential and commercial properties.",
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 6l3 1 2-3"/><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M20 4l-8 8"/><path d="M12 12c-1.5 1.5-3.5 2.5-6 2.5"/><path d="M6 14.5L4 20"/><path d="M8 13L7 20"/><path d="M10 12l1 8"/><path d="M12 12v8"/></svg>,
   },
   {
     title: 'Bush & Hedge Trimming',
     href: '/services/bush-trimming',
     description: 'Crisp, clean lines that instantly boost curb appeal. We shape, trim, and maintain your shrubs and hedges so they always look intentional — never neglected.',
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l9 9"/><path d="M20 4l-9 9"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M7.5 16.5L11 13M16.5 16.5L13 13"/></svg>,
   },
   {
     title: 'Mulching & Bed Maintenance',
     href: '/services/mulching',
     description: "Fresh mulch, clean edges, weed-free beds. It's one of the fastest ways to make your entire property look polished and well-maintained.",
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M2 22l1-1h18l1 1"/><path d="M6 18V4a2 2 0 012-2h8a2 2 0 012 2v14"/><path d="M10 10h4"/><path d="M10 14h4"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8l4 8h9l3-6z"/><path d="M16 16l3 3"/><circle cx="8" cy="19" r="2"/><path d="M3 8l-1-2"/></svg>,
   },
   {
     title: '10-Yard Dump Trailer Rental',
     href: '/services/trailer-rental',
     description: "Need to haul it yourself? Rent our 10-yard dump trailer starting at $150/day. Drop-off, pickup, and disposal included in our full-service option at $400.",
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="1" y="6" width="15" height="10" rx="1"/><path d="M16 10h4l3 3v3h-7V10z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M1 14h15"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15l14-4 3 5H3z"/><path d="M3 15v3h17v-3"/><circle cx="7" cy="20" r="1.6"/><circle cx="16" cy="20" r="1.6"/><path d="M17 11l-1-4"/></svg>,
   },
   {
-    title: 'Pressure Washing',
-    href: '/services/pressure-washing',
+    title: 'Power Washing',
+    href: '/services/power-washing',
     description: "Driveways, siding, decks, patios, fences, and roofs, cleaned right. High-pressure washing for hard surfaces and gentle soft washing for delicate ones. Residential and commercial across the East Bay.",
-    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21h6v-2a3 3 0 013-3h1V9"/><path d="M13 9V4a1 1 0 011-1h1l5 3v3z"/><path d="M13 6l-4-1"/><path d="M18 12l2 1M18 15l3 1M18 18l2 1"/></svg>,
+    icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20v-3h4v-2h4l1-4"/><path d="M12 11l1-4h3l-1 4z"/><path d="M13 7l-3-1"/><path d="M18 8l3-1M18 11l3 0M18 14l3 1"/></svg>,
   },
 ]
 
@@ -173,7 +173,7 @@ export default function HomePage() {
             { "@type": "Question", "name": "What areas does JB Lawn Care serve?", "acceptedAnswer": { "@type": "Answer", "text": "JB Lawn Care & Hauling serves Oakland, Berkeley, Richmond, Hayward, Fremont, San Leandro, Concord, Walnut Creek, Pleasanton, Dublin, and the greater Bay Area." }},
             { "@type": "Question", "name": "Is it cheaper to hire a junk removal company or rent a dumpster?", "acceptedAnswer": { "@type": "Answer", "text": "In most cases, hiring a junk removal crew is cheaper when you factor in dumpster rental fees, permits, disposal costs, and labor." }},
             { "@type": "Question", "name": "Can I rent a dump trailer in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers a 10-yard dump trailer for $150/day for DIY projects, or $400 for full-service including drop-off, pickup, and up to 1 ton of disposal. Available from Hayward to Vallejo." }},
-            { "@type": "Question", "name": "Do you do pressure washing in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers pressure washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay." }},
+            { "@type": "Question", "name": "Do you do power washing in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers power washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay." }},
           ]
         })}}
       />
@@ -487,8 +487,8 @@ export default function HomePage() {
                 a: 'Yes. We offer a 10-yard dump trailer for rent at $150/day for DIY projects, or $400 for full-service (drop-off, pickup, and up to 1 ton of disposal included). Available from Hayward to Vallejo.',
               },
               {
-                q: 'Do you do pressure washing?',
-                a: 'Yes. We offer pressure washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay. Hard surfaces get high-pressure washing and delicate ones get gentle soft washing so nothing is damaged.',
+                q: 'Do you do power washing?',
+                a: 'Yes. We offer power washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay. Hard surfaces get high-pressure washing and delicate ones get gentle soft washing so nothing is damaged.',
               },
             ].map((faq, i) => (
               <details key={i} style={{
