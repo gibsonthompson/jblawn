@@ -165,11 +165,6 @@ function PublicLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
         <div className="footer-bottom">
           <span>&copy; 2026 JB Lawn Care &amp; Hauling. All rights reserved.</span>
-          <span>
-            <Link href="/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</Link>
-            {' · '}
-            <Link href="/terms" style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</Link>
-          </span>
         </div>
       </footer>
 
