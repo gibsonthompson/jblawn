@@ -200,7 +200,7 @@ export default function HomePage() {
                 <div className="hero-stat-label">Properties Serviced</div>
               </div>
               <div>
-                <div className="hero-stat-value">5.0★</div>
+                <div className="hero-stat-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>5.0 <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--yellow)" stroke="var(--yellow)" strokeWidth="1" style={{ verticalAlign: '-4px' }}><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 17.8 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></div>
                 <div className="hero-stat-label">Google Rating</div>
               </div>
               <div>
@@ -277,10 +277,10 @@ export default function HomePage() {
               <p className="section-subtitle" style={{ marginBottom: 36 }}>Most lawn care companies and junk haulers in Oakland and the East Bay are unreliable. We built our reputation by doing the opposite — showing up, communicating, and doing the job right the first time.</p>
               <div className="why-points">
                 {[
-                  { title: 'We Show Up When We Say We Will', desc: "No guessing games. You'll get a confirmed time window and a heads-up when we're on the way. If something changes, we communicate — always.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
-                  { title: 'Transparent, Honest Pricing', desc: 'No hidden fees, no surprise charges. We quote it, you approve it, and that\'s what you pay. Every single time.', icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
-                  { title: 'Fully Licensed & Insured', desc: "You're protected. Our team is covered so you never have to worry about liability on your property.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-6 0v4"/><rect x="2" y="9" width="20" height="13" rx="2"/></svg> },
-                  { title: 'We Actually Care About the Result', desc: "This isn't a side hustle — it's our livelihood. If you're not happy with the work, we come back and make it right. Period.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> },
+                  { title: 'We Show Up When We Say We Will', desc: "No guessing games. You'll get a confirmed time window and a heads-up when we're on the way. If something changes, we communicate — always.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/></svg> },
+                  { title: 'Transparent, Honest Pricing', desc: 'No hidden fees, no surprise charges. We quote it, you approve it, and that\'s what you pay. Every single time.', icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12l-8 8-8-8V4h8z"/><circle cx="9" cy="9" r="1.3"/></svg> },
+                  { title: 'Fully Licensed & Insured', desc: "You're protected. Our team is covered so you never have to worry about liability on your property.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg> },
+                  { title: 'We Actually Care About the Result', desc: "This isn't a side hustle — it's our livelihood. If you're not happy with the work, we come back and make it right. Period.", icon: <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 9l2 2 4-4"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg> },
                 ].map((p) => (
                   <div key={p.title} className="why-point">
                     <div className="why-point-icon">{p.icon}</div>

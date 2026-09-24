@@ -35,10 +35,10 @@ export default function AboutClient() {
           <div className="fade-in" style={{ maxWidth: 760, margin: '0 auto' }}>
             <h2 className="section-title" style={{ marginBottom: 20 }}>Who We Are</h2>
             <p className="service-intro-text">
-              JB Lawn Care &amp; Hauling started the way most good service businesses do — one truck, a strong work ethic, and a commitment to doing the job right. What began as lawn mowing for a handful of neighbors grew into a full-service property maintenance and hauling operation serving homeowners, landlords, and property managers across the entire Bay Area.
+              JB Lawn Care &amp; Hauling started the way most good service businesses do, one truck, a strong work ethic, and a commitment to doing the job right. What began as lawn mowing for a handful of neighbors grew into a full-service property maintenance and hauling operation serving homeowners, landlords, and property managers across the entire Bay Area.
             </p>
             <p className="service-intro-text" style={{ marginTop: 16 }}>
-              We&apos;re not a franchise. We&apos;re not backed by investors. We&apos;re a small, local crew that shows up on time, does quality work, communicates clearly, and charges fair prices. That&apos;s the whole business model — and it&apos;s why our customers keep coming back and referring their friends.
+              We&apos;re not a franchise. We&apos;re not backed by investors. We&apos;re a small, local crew that shows up on time, does quality work, communicates clearly, and charges fair prices. That&apos;s the whole business model, and it&apos;s why our customers keep coming back and referring their friends.
             </p>
           </div>
         </div>
@@ -50,15 +50,15 @@ export default function AboutClient() {
           <div className="section-header center fade-in">
             <h2 className="section-title">What We Stand For</h2>
           </div>
-          <div className="service-steps fade-in" style={{ maxWidth: 1000 }}>
+          <div className="about-values fade-in">
             {[
-              { icon: '🕐', title: 'Reliability', desc: 'We show up when we say we will. If something changes, we communicate before you have to ask. No ghosting, no excuses.' },
-              { icon: '💬', title: 'Transparency', desc: "You'll always know the price before we start. No hidden fees, no surprise charges, no bait-and-switch. The quote is the quote." },
-              { icon: '💪', title: 'Quality Work', desc: "We don't cut corners. Every lawn gets edged. Every cleanup gets hauled. Every job gets a final walkthrough before we leave." },
-              { icon: '🤝', title: 'Respect', desc: 'We treat your property like it matters — because it does. Clean boots, careful equipment handling, and a yard that looks better than when we arrived.' },
+              { icon: <svg width="28" height="28" fill="none" stroke="var(--green-mid)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/><path d="M12 2v3"/></svg>, title: 'Reliability', desc: 'We show up when we say we will. If something changes, we communicate before you have to ask. No ghosting, no excuses.' },
+              { icon: <svg width="28" height="28" fill="none" stroke="var(--green-mid)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>, title: 'Transparency', desc: "You'll always know the price before we start. No hidden fees, no surprise charges, no bait-and-switch. The quote is the quote." },
+              { icon: <svg width="28" height="28" fill="none" stroke="var(--green-mid)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M6 11V8a2 2 0 012-2h1V4.5a1.5 1.5 0 013 0V6h2l3 1v5"/><path d="M6 11H4a1 1 0 00-1 1v4a1 1 0 001 1h2"/><path d="M6 11v6l3 2h7a2 2 0 002-2v-3a2 2 0 00-2-2z"/></svg>, title: 'Quality Work', desc: "We don't cut corners. Every lawn gets edged. Every cleanup gets hauled. Every job gets a final walkthrough before we leave." },
+              { icon: <svg width="28" height="28" fill="none" stroke="var(--green-mid)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8.5C12 7 10.5 6 9 6.5 7.5 7 7 9 8 10.5l4 4 4-4c1-1.5.5-3.5-1-4-1.5-.5-3 .5-3 2z"/><path d="M4 14v2a3 3 0 003 3h4"/><path d="M20 14v2a3 3 0 01-3 3h-4"/></svg>, title: 'Respect', desc: 'We treat your property like it matters, because it does. Clean boots, careful equipment handling, and a yard that looks better than when we arrived.' },
             ].map((v) => (
-              <div key={v.title} className="service-step" style={{ textAlign: 'left', padding: '24px', background: 'var(--white)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--gray-light)' }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: 12 }}>{v.icon}</div>
+              <div key={v.title} className="service-step">
+                <div style={{ marginBottom: 12 }}>{v.icon}</div>
                 <h3>{v.title}</h3>
                 <p>{v.desc}</p>
               </div>
@@ -76,12 +76,12 @@ export default function AboutClient() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, textAlign: 'center' }}>
               {[
-                { value: '5.0★', label: 'Google Rating' },
-                { value: '500+', label: 'Properties Serviced' },
-                { value: '100%', label: 'Fully Insured' },
+                { value: '5.0', star: true, label: 'Google Rating' },
+                { value: '500+', star: false, label: 'Properties Serviced' },
+                { value: '100%', star: false, label: 'Fully Insured' },
               ].map((s) => (
                 <div key={s.label} style={{ padding: 24, background: 'var(--off-white)', borderRadius: 'var(--radius-lg)' }}>
-                  <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '2rem', color: 'var(--green-bright)', marginBottom: 4 }}>{s.value}</div>
+                  <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '2rem', color: 'var(--green-bright)', marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 4 }}>{s.value}{s.star && <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--yellow)" stroke="var(--yellow)" strokeWidth="1" style={{ verticalAlign: '-3px' }}><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 17.8 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg>}</div>
                   <div style={{ fontSize: '0.88rem', color: 'var(--gray-mid)', fontWeight: 600 }}>{s.label}</div>
                 </div>
               ))}

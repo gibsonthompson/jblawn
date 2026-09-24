@@ -119,12 +119,19 @@ export default function ServicePageClient({
             <div className="service-pricing-card">
               <div className="service-pricing-card-inner">
                 <h3>Why Choose JB?</h3>
-                <ul>
-                  <li>✓ Transparent, upfront pricing — no hidden fees</li>
-                  <li>✓ Fully licensed and insured</li>
-                  <li>✓ Same-day estimates available</li>
-                  <li>✓ 5.0★ rated on Google</li>
-                  <li>✓ Locally owned, Bay Area based</li>
+                <ul className="why-jb-list">
+                  {[
+                    { icon: <svg width="18" height="18" fill="none" stroke="var(--green-bright)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12l-8 8-8-8V4h8z"/><circle cx="9" cy="9" r="1.3"/></svg>, text: 'Transparent, upfront pricing with no hidden fees' },
+                    { icon: <svg width="18" height="18" fill="none" stroke="var(--green-bright)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>, text: 'Fully licensed and insured' },
+                    { icon: <svg width="18" height="18" fill="none" stroke="var(--green-bright)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>, text: 'Same-day estimates available' },
+                    { icon: <svg width="18" height="18" fill="none" stroke="var(--green-bright)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l2.5 5.5 6 .5-4.5 4 1.4 6L12 18l-5.4 3 1.4-6-4.5-4 6-.5z"/></svg>, text: '5.0 star rated on Google' },
+                    { icon: <svg width="18" height="18" fill="none" stroke="var(--green-bright)" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>, text: 'Locally owned, Bay Area based' },
+                  ].map((row, i) => (
+                    <li key={i}>
+                      <span className="why-jb-icon">{row.icon}</span>
+                      {row.text}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>

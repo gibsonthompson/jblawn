@@ -1606,6 +1606,36 @@ body {
   line-height: 1.5;
 }
 
+.why-jb-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.why-jb-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: inline-flex;
+}
+
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.about-values .service-step {
+  text-align: left;
+  padding: 24px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-light);
+}
+@media (max-width: 900px) {
+  .about-values { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+  .about-values { grid-template-columns: 1fr; }
+}
+
 /* Related */
 .service-related {
   display: grid;
