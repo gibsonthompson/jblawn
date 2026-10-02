@@ -243,27 +243,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Services */}
-      <section className="section services" id="services">
-        <div className="container">
-          <div className="section-header center fade-in">
-            <div className="section-label">Our Services</div>
-            <h2 className="section-title">Lawn Mowing, Junk Removal &amp;<br />Full Property Cleanups</h2>
-            <p className="section-subtitle">From weekly lawn maintenance to same-day junk hauling, we handle every outdoor job Bay Area homeowners and property managers need done. No subcontractors — our crew does it all.</p>
-          </div>
-          <div className="services-grid">
-            {SERVICES.map((s) => (
-              <Link key={s.href} href={s.href} className="service-card fade-in">
-                <div className="service-icon">{s.icon}</div>
-                <h3>{s.title}</h3>
-                <p>{s.description}</p>
-                <span className="service-link">Learn more →</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Why Choose Us */}
       <section className="section why-us">
         <div className="container">
@@ -294,31 +273,6 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="section process">
-        <div className="container">
-          <div className="section-header center fade-in">
-            <div className="section-label">How It Works</div>
-            <h2 className="section-title">From First Call to Finished Job<br />— It&apos;s That Simple</h2>
-            <p className="section-subtitle">No runaround. No phone tag. Just a straightforward process that gets your property taken care of fast.</p>
-          </div>
-          <div className="process-steps fade-in">
-            {[
-              { num: 1, title: 'Request a Quote', desc: "Book online or give us a call. Tell us what you need and we'll get back to you fast — usually within the hour." },
-              { num: 2, title: 'Get Your Estimate', desc: 'We\'ll assess the job, give you a clear price with no hidden fees, and answer any questions you have.' },
-              { num: 3, title: 'We Get to Work', desc: "Our crew shows up on time with the right equipment. We handle everything — you don't have to lift a finger." },
-              { num: 4, title: 'Enjoy the Results', desc: 'Walk out to a property that looks incredible. Love the work? Set up recurring service and never think about it again.' },
-            ].map((s) => (
-              <div key={s.num} className="process-step">
-                <div className="process-num">{s.num}</div>
-                <h4>{s.title}</h4>
-                <p>{s.desc}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -357,6 +311,56 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Services */}
+      <section className="section services" id="services">
+        <div className="container">
+          <div className="section-header center fade-in">
+            <div className="section-label">Our Services</div>
+            <h2 className="section-title">Lawn Mowing, Junk Removal &amp;<br />Full Property Cleanups</h2>
+            <p className="section-subtitle">From weekly lawn maintenance to same-day junk hauling, we handle every outdoor job Bay Area homeowners and property managers need done. No subcontractors — our crew does it all.</p>
+          </div>
+          <div className="services-grid">
+            {SERVICES.map((s) => (
+              <Link key={s.href} href={s.href} className="service-card fade-in">
+                <div className="service-icon">{s.icon}</div>
+                <h3>{s.title}</h3>
+                <p>{s.description}</p>
+                <span className="service-link">Learn more →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      
+
+      {/* How It Works */}
+      <section className="section process">
+        <div className="container">
+          <div className="section-header center fade-in">
+            <div className="section-label">How It Works</div>
+            <h2 className="section-title">From First Call to Finished Job<br />— It&apos;s That Simple</h2>
+            <p className="section-subtitle">No runaround. No phone tag. Just a straightforward process that gets your property taken care of fast.</p>
+          </div>
+          <div className="process-steps fade-in">
+            {[
+              { num: 1, title: 'Request a Quote', desc: "Book online or give us a call. Tell us what you need and we'll get back to you fast — usually within the hour." },
+              { num: 2, title: 'Get Your Estimate', desc: 'We\'ll assess the job, give you a clear price with no hidden fees, and answer any questions you have.' },
+              { num: 3, title: 'We Get to Work', desc: "Our crew shows up on time with the right equipment. We handle everything — you don't have to lift a finger." },
+              { num: 4, title: 'Enjoy the Results', desc: 'Walk out to a property that looks incredible. Love the work? Set up recurring service and never think about it again.' },
+            ].map((s) => (
+              <div key={s.num} className="process-step">
+                <div className="process-num">{s.num}</div>
+                <h4>{s.title}</h4>
+                <p>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      
 
       {/* Testimonials */}
       <section className="section testimonials">
