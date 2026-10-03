@@ -1001,7 +1001,9 @@ body {
 
 /* ========== CTA BANNER ========== */
 .cta-banner {
-  background: linear-gradient(135deg, var(--green-bright) 0%, var(--green-mid) 100%);
+  background: linear-gradient(135deg, rgba(27,77,10,0.78) 0%, rgba(15,46,6,0.82) 100%), url('/images/gallery/cta-backyard-bg.jpg');
+  background-size: cover;
+  background-position: center 40%;
   padding: 80px 24px;
   text-align: center;
   position: relative;
