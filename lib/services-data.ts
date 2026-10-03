@@ -218,7 +218,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       { q: 'What type of mulch is best for Bay Area gardens?', a: 'Bark mulch and wood chips are the most popular and effective for Bay Area properties. They retain moisture well in our dry summers and break down slowly. We can also do rubber mulch for low-maintenance areas.' },
       { q: 'Do you remove weeds before mulching?', a: 'Always. Laying mulch over existing weeds just creates problems. We pull all weeds and clear the beds before any new mulch goes down.' },
     ],
-    beforeAfterPhoto: { before: '/images/gallery/yard-cleanup-before.jpg', after: '/images/gallery/yard-cleanup-after.jpg', caption: 'Overgrown beds cleaned and fresh landscape installed' },
+    beforeAfterPhoto: { before: '/images/gallery/front-mulch-before.jpg', after: '/images/gallery/front-mulch-after.jpg', caption: 'Bare dirt strip transformed with fresh mulch and plants' },
     relatedServices: ['landscaping', 'lawn-mowing', 'bush-trimming'],
     relatedAreas: ['oakland', 'walnut-creek', 'pleasanton', 'dublin'],
   },

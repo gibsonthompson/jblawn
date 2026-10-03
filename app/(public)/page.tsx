@@ -113,6 +113,9 @@ const BLOG_POSTS = [
 ]
 
 const GALLERY_PAIRS = [
+  { before: '/images/gallery/junk-pad-before.jpg', after: '/images/gallery/junk-pad-after.jpg', title: 'Backyard Junk Removal', tag: 'Junk Hauling' },
+  { before: '/images/gallery/front-mulch-before.jpg', after: '/images/gallery/front-mulch-after.jpg', title: 'Front Yard Mulch & Cleanup', tag: 'Landscaping' },
+  { before: '/images/gallery/side-mulch-before.jpg', after: '/images/gallery/side-mulch-after.jpg', title: 'Side Yard Mulch Install', tag: 'Landscaping' },
   { before: '/images/gallery/sod-transformation-before.jpg', after: '/images/gallery/sod-transformation-after.jpg', title: 'Backyard Sod Transformation', tag: 'Landscaping' },
   { before: '/images/gallery/mulch-bed-before.jpg', after: '/images/gallery/mulch-bed-after.jpg', title: 'Garden Bed Mulch Refresh', tag: 'Landscaping' },
   { before: '/images/gallery/deck-cleanout-before.jpg', after: '/images/gallery/deck-cleanout-after.jpg', title: 'Deck Cleanout', tag: 'Junk Hauling' },
@@ -249,7 +252,7 @@ export default function HomePage() {
           <div className="why-grid">
             <div className="why-image fade-in">
               <div style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-                <img src="/images/gallery/front-yard-sod-after.jpg" alt="Fresh lawn installation by JB Lawn Care" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="/images/gallery/backyard-sod-showcase.jpg" alt="Lush backyard sod installation with irrigation by JB Lawn Care" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             </div>
             <div className="fade-in">

@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { useBooking } from '../../../components/BookingContext'
 
 const GALLERY_PAIRS = [
+  { before: '/images/gallery/junk-pad-before.jpg', after: '/images/gallery/junk-pad-after.jpg', title: 'Backyard Junk Removal', tag: 'Junk Removal', city: 'Oakland' },
+  { before: '/images/gallery/front-mulch-before.jpg', after: '/images/gallery/front-mulch-after.jpg', title: 'Front Yard Mulch & Cleanup', tag: 'Landscaping', city: 'Oakland' },
+  { before: '/images/gallery/side-mulch-before.jpg', after: '/images/gallery/side-mulch-after.jpg', title: 'Side Yard Mulch Install', tag: 'Landscaping', city: 'Oakland' },
   { before: '/images/gallery/sod-transformation-before.jpg', after: '/images/gallery/sod-transformation-after.jpg', title: 'Backyard Sod Transformation', tag: 'Landscaping', city: 'Oakland' },
   { before: '/images/gallery/mulch-bed-before.jpg', after: '/images/gallery/mulch-bed-after.jpg', title: 'Garden Bed Mulch Refresh', tag: 'Landscaping', city: 'Oakland' },
   { before: '/images/gallery/deck-cleanout-before.jpg', after: '/images/gallery/deck-cleanout-after.jpg', title: 'Deck Cleanout', tag: 'Junk Removal', city: 'Oakland' },
