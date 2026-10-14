@@ -226,12 +226,12 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
   'trailer-rental': {
     slug: 'trailer-rental',
     title: '10-Yard Dump Trailer Rental',
-    metaTitle: 'Dump Trailer Rental Bay Area | 10-Yard | $150/Day or $400 Full Service | JB Lawn Care',
-    metaDescription: 'Rent a 10-yard dump trailer in the Bay Area. $150/day DIY or $400 full-service with drop-off, pickup, and 1 ton disposal included. Hayward to Vallejo. Call 341-260-0331.',
+    metaTitle: 'Dump Trailer Rental Bay Area | 10-Yard | $150/Day or $500 Full Service | JB Lawn Care',
+    metaDescription: 'Rent a 10-yard dump trailer in the Bay Area. $150/day DIY or $500 full-service with drop-off, pickup, and 1 ton disposal included. Hayward to Vallejo. Call 341-260-0331.',
     heroKeyword: 'dump trailer rental Bay Area',
     headline: '10-Yard Dump Trailer Rental in the Bay Area',
-    subheadline: 'DIY for $150/day, or go full-service at $400 — we drop it, you fill it, we haul it.',
-    intro: "Not every job needs a full junk removal crew. Sometimes you just need a trailer to load at your own pace — a garage cleanout over the weekend, a small demolition project, or clearing out a rental property between tenants. JB Lawn Care offers 10-yard dump trailer rentals across the Bay Area, from Hayward to Vallejo and everywhere in between. Our heavy-duty trailer handles junk, yard debris, construction waste, old furniture, and more. Choose daily rental at $150/day and haul it yourself, or go full-service at $400 and we handle drop-off, pickup, and disposal.",
+    subheadline: 'DIY for $150/day, or go full-service at $500 — we drop it, you fill it, we haul it.',
+    intro: "Not every job needs a full junk removal crew. Sometimes you just need a trailer to load at your own pace — a garage cleanout over the weekend, a small demolition project, or clearing out a rental property between tenants. JB Lawn Care offers 10-yard dump trailer rentals across the Bay Area, from Hayward to Vallejo and everywhere in between. Our heavy-duty trailer handles junk, yard debris, construction waste, old furniture, and more. Choose daily rental at $150/day and haul it yourself, or go full-service at $500 and we handle drop-off, pickup, and disposal.",
     whatsIncluded: [
       'Heavy-duty 10-yard dump trailer (equivalent to about 4 pickup truck loads)',
       'Drop-off at your property on your schedule',
@@ -245,7 +245,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       { step: 2, title: 'Fill It Up', desc: 'Load the trailer at your own pace. The 10-yard capacity handles most residential cleanout projects in a single load.' },
       { step: 3, title: 'We Pick Up & Dispose', desc: 'Call us when you\'re done. We pick up the loaded trailer and handle all disposal. Full-service plan includes up to 1 ton of dump fees.' },
     ],
-    pricingContext: 'Two options: $150/day for DIY daily rental (you haul it to the dump yourself), or $400 flat for full-service (we drop off the trailer, pick it up when you\'re done, and dispose of up to 1 ton of material — keep it up to 7 days). Additional disposal beyond 1 ton is billed at cost. The full-service option is by far the most popular.',
+    pricingContext: 'Two options: $150/day for DIY daily rental (you haul it to the dump yourself), or $500 flat for full-service (we drop off the trailer, pick it up when you\'re done, and dispose of up to 1 ton of material — keep it up to 7 days). Additional disposal beyond 1 ton is billed at cost. The full-service option is by far the most popular.',
     faqs: [
       { q: 'How big is a 10-yard dump trailer?', a: 'A 10-yard trailer holds roughly the equivalent of 4 full pickup truck loads. It\'s large enough for most garage cleanouts, small renovation debris, or yard waste from a standard residential lot.' },
       { q: 'What can I put in the dump trailer?', a: 'Household junk, furniture, appliances, construction debris (wood, drywall, concrete in small amounts), yard waste, old fencing, carpet, and general refuse. No hazardous materials, tires, or paint.' },

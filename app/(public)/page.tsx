@@ -54,7 +54,7 @@ const SERVICES = [
   {
     title: '10-Yard Dump Trailer Rental',
     href: '/services/trailer-rental',
-    description: "Need to haul it yourself? Rent our 10-yard dump trailer starting at $150/day. Drop-off, pickup, and disposal included in our full-service option at $400.",
+    description: "Need to haul it yourself? Rent our 10-yard dump trailer starting at $150/day. Drop-off, pickup, and disposal included in our full-service option at $500.",
     icon: <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15l14-4 3 5H3z"/><path d="M3 15v3h17v-3"/><circle cx="7" cy="20" r="1.6"/><circle cx="16" cy="20" r="1.6"/><path d="M17 11l-1-4"/></svg>,
   },
   {
@@ -177,7 +177,7 @@ export default function HomePage() {
             { "@type": "Question", "name": "How often should I have my lawn mowed in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "In the Bay Area's mild climate, most lawns need weekly mowing from March through October and bi-weekly service during the cooler months." }},
             { "@type": "Question", "name": "What areas does JB Lawn Care serve?", "acceptedAnswer": { "@type": "Answer", "text": "JB Lawn Care & Hauling serves Oakland, Berkeley, Richmond, Hayward, Fremont, San Leandro, Concord, Walnut Creek, Pleasanton, Dublin, and the greater Bay Area." }},
             { "@type": "Question", "name": "Is it cheaper to hire a junk removal company or rent a dumpster?", "acceptedAnswer": { "@type": "Answer", "text": "In most cases, hiring a junk removal crew is cheaper when you factor in dumpster rental fees, permits, disposal costs, and labor." }},
-            { "@type": "Question", "name": "Can I rent a dump trailer in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers a 10-yard dump trailer for $150/day for DIY projects, or $400 for full-service including drop-off, pickup, and up to 1 ton of disposal. Available from Hayward to Vallejo." }},
+            { "@type": "Question", "name": "Can I rent a dump trailer in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers a 10-yard dump trailer for $150/day for DIY projects, or $500 for full-service including drop-off, pickup, and up to 1 ton of disposal. Available from Hayward to Vallejo." }},
             { "@type": "Question", "name": "Do you do power washing in the Bay Area?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. JB Lawn Care offers power washing and soft washing for driveways, sidewalks, patios, decks, siding, fences, and roofs, for both homes and businesses across Oakland, Hayward, Fremont, and the East Bay." }},
           ]
         })}}
@@ -431,7 +431,7 @@ export default function HomePage() {
               <p className="trailer-area">Serving <strong>Hayward to Vallejo</strong> — and everywhere in between.</p>
               <div className="trailer-pricing">
                 <div className="trailer-price-card featured">
-                  <div className="trailer-price">$400</div>
+                  <div className="trailer-price">$500</div>
                   <div className="trailer-price-label">Full-Service Package</div>
                   <div className="trailer-price-details">Drop-off + pickup included. Covers 1 ton of disposal fees. Keep it up to 7 days.</div>
                 </div>
@@ -493,7 +493,7 @@ export default function HomePage() {
               },
               {
                 q: 'Can I rent a dump trailer instead?',
-                a: 'Yes. We offer a 10-yard dump trailer for rent at $150/day for DIY projects, or $400 for full-service (drop-off, pickup, and up to 1 ton of disposal included). Available from Hayward to Vallejo.',
+                a: 'Yes. We offer a 10-yard dump trailer for rent at $150/day for DIY projects, or $500 for full-service (drop-off, pickup, and up to 1 ton of disposal included). Available from Hayward to Vallejo.',
               },
               {
                 q: 'Do you do power washing?',

@@ -120,7 +120,7 @@ export const AREAS_DATA: Record<string, AreaData> = {
     neighborhoods: ['Hayward Hills', 'Downtown Hayward', 'Tennyson', 'South Hayward', 'Mission Blvd corridor', 'Jackson Triangle', 'Cherryland'],
     distanceNote: 'Hayward is central to our service area — we have crews working in Hayward nearly every day.',
     faqs: [
-      { q: 'Can I rent a dump trailer in Hayward?', a: 'Yes — Hayward is our most popular area for trailer rentals. $150/day DIY or $400 full-service with drop-off, pickup, and disposal included. Call 341-260-0331 to reserve.' },
+      { q: 'Can I rent a dump trailer in Hayward?', a: 'Yes — Hayward is our most popular area for trailer rentals. $150/day DIY or $500 full-service with drop-off, pickup, and disposal included. Call 341-260-0331 to reserve.' },
       { q: 'Do you offer weekly lawn mowing in Hayward?', a: 'Yes. Weekly and bi-weekly mowing plans are our most popular service in Hayward. We assign a consistent crew to your property so the work is done the same way every visit.' },
       { q: 'How fast can you do a junk removal in Hayward?', a: 'Same-day service is usually available in Hayward since we\'re in the area daily. Book before noon for same-day pickup.' },
     ],
