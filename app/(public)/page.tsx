@@ -72,16 +72,34 @@ const SERVICE_AREAS = [
 
 const TESTIMONIALS = [
   {
+    text: "Our backyard needed serious work, and with a newborn at home we were completely overwhelmed. From the start JB was professional, kind, and responsive. His team communicated with us the entire time and pulled through even during multiple days of extreme weather, taking great care to be quiet and avoid any disruption for the baby. 10/10 service. I highly recommend them and will definitely hire again.",
+    name: 'Shreya B.',
+    location: null,
+    initials: 'SB',
+  },
+  {
     text: "JB and his crew completely transformed our backyard. It went from an overgrown mess to something we actually want to spend time in. Reliable, fair prices, and great communication throughout.",
     name: 'Maria R.',
     location: 'Oakland, CA',
     initials: 'MR',
   },
   {
+    text: "These guys are the real deal. I needed my yard cleaned up after years of garbage piling up and the grass, bushes, and weeds getting overgrown. They came out, gave me a fair price, and got to work. It was really hot but they got the job done. Definitely recommend!",
+    name: 'Google Review',
+    location: null,
+    initials: 'GR',
+  },
+  {
     text: "I had an entire garage worth of junk that needed to go before I could sell my house. JB's team cleared it out in one afternoon. Saved me a weekend of trips to the dump. Highly recommend.",
     name: 'David L.',
     location: 'San Francisco, CA',
     initials: 'DL',
+  },
+  {
+    text: "I hired Jose to clean my front and back yard, which needed a lot of heavy lifting. Him and his employee did a fantastic job throughout all my yards and I'm very satisfied with his services. Thanks Jose and team!",
+    name: 'Google Review',
+    location: null,
+    initials: 'GR',
   },
   {
     text: "We've been using JB for weekly mowing for about six months now. They're always on time, the lawn looks perfect every single week, and I don't have to worry about a thing. Best decision I made.",
@@ -120,6 +138,8 @@ const GALLERY_PAIRS = [
   { before: '/images/gallery/sideyard-overgrown-before.jpg', after: '/images/gallery/sideyard-overgrown-after.jpg', title: 'Overgrown Side Yard Cleanup', tag: 'Yard Cleanup' },
   { before: '/images/gallery/ac-sideyard-before.jpg', after: '/images/gallery/ac-sideyard-after.jpg', title: 'Side Yard Weed Removal', tag: 'Yard Cleanup' },
   { before: '/images/gallery/leaf-cleanup-before.jpg', after: '/images/gallery/leaf-cleanup-after.jpg', title: 'Fall Leaf & Street Cleanup', tag: 'Leaf Cleanup' },
+  { before: '/images/gallery/garage-cleanout-before.jpg', after: '/images/gallery/garage-cleanout-after.jpg', title: 'Garage Cleanout', tag: 'Junk Hauling' },
+  { before: '/images/gallery/backyard-junk-before.jpg', after: '/images/gallery/backyard-junk-after.jpg', title: 'Backyard Cleanout', tag: 'Hauling & Cleanup' },
   { before: '/images/gallery/junk-pad-before.jpg', after: '/images/gallery/junk-pad-after.jpg', title: 'Backyard Junk Removal', tag: 'Junk Hauling' },
   { before: '/images/gallery/front-mulch-before.jpg', after: '/images/gallery/front-mulch-after.jpg', title: 'Front Yard Mulch & Cleanup', tag: 'Landscaping' },
   { before: '/images/gallery/side-mulch-before.jpg', after: '/images/gallery/side-mulch-after.jpg', title: 'Side Yard Mulch Install', tag: 'Landscaping' },
@@ -128,9 +148,7 @@ const GALLERY_PAIRS = [
   { before: '/images/gallery/deck-cleanout-before.jpg', after: '/images/gallery/deck-cleanout-after.jpg', title: 'Deck Cleanout', tag: 'Junk Hauling' },
   { before: '/images/gallery/yard-cleanup-before.jpg', after: '/images/gallery/yard-cleanup-after.jpg', title: 'Yard Cleanup & Sod', tag: 'Lawn Care' },
   { before: '/images/gallery/side-yard-before.jpg', after: '/images/gallery/side-yard-after.jpg', title: 'Side Yard Clearing', tag: 'Yard Cleanup' },
-  { before: '/images/gallery/backyard-junk-before.jpg', after: '/images/gallery/backyard-junk-after.jpg', title: 'Backyard Cleanout', tag: 'Hauling & Cleanup' },
   { before: '/images/gallery/hot-tub-removal-before.jpg', after: '/images/gallery/hot-tub-removal-after.jpg', title: 'Hot Tub Removal', tag: 'Heavy Hauling' },
-  { before: '/images/gallery/garage-cleanout-before.jpg', after: '/images/gallery/garage-cleanout-after.jpg', title: 'Garage Cleanout', tag: 'Junk Hauling' },
   { before: '/images/gallery/bush-removal-before.jpg', after: '/images/gallery/bush-removal-after.jpg', title: 'Bush Removal', tag: 'Yard Cleanup' },
   { before: '/images/gallery/overgrown-backyard-before.jpg', after: '/images/gallery/overgrown-backyard-after.jpg', title: 'Overgrown Yard Restoration', tag: 'Lawn Care' },
   { before: '/images/gallery/front-yard-sod-before.jpg', after: '/images/gallery/front-yard-sod-after.jpg', title: 'Front Yard Sod Installation', tag: 'Landscaping' },
@@ -297,7 +315,7 @@ export default function HomePage() {
           </div>
 
           <div className="gallery-grid">
-            {GALLERY_PAIRS.slice(0, 4).map((pair) => (
+            {GALLERY_PAIRS.slice(0, 6).map((pair) => (
               <div key={pair.title} className="gallery-pair fade-in">
                 <div className="gallery-pair-images">
                   <div className="gallery-img-wrap">
