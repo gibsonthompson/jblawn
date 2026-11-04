@@ -95,24 +95,31 @@ const BLOG_POSTS = [
   {
     href: '/blog/how-often-should-you-mow-your-lawn-bay-area',
     category: 'Lawn Care',
+    image: '/images/gallery/backyard-sod-showcase.jpg',
     title: 'How Often Should You Mow Your Lawn in the Bay Area?',
     excerpt: "Bay Area grass grows year-round thanks to the mild climate. Here's a seasonal mowing schedule that keeps your lawn healthy without overdoing it.",
   },
   {
     href: '/blog/junk-removal-vs-dumpster-rental-cost-comparison',
     category: 'Junk Removal',
+    image: '/images/gallery/dump-trailer.jpg',
     title: 'Junk Removal vs. Dumpster Rental: Which Is Cheaper in 2026?',
     excerpt: "When you factor in rental fees, permits, disposal costs, and your own labor, hiring a junk removal crew is usually the better deal. Here's the math.",
   },
   {
     href: '/blog/spring-yard-cleanup-checklist-bay-area',
     category: 'Yard Cleanup',
+    image: '/images/blog/spring-cleanup.jpg',
     title: 'Spring Yard Cleanup Checklist for Bay Area Homeowners',
     excerpt: 'The complete list of everything your yard needs after winter — from debris clearing and aeration to mulching and pre-emergent weed control.',
   },
 ]
 
 const GALLERY_PAIRS = [
+  { before: '/images/gallery/newlawn-sod-before.jpg', after: '/images/gallery/newlawn-sod-after.jpg', title: 'New Lawn Sod Install', tag: 'Landscaping' },
+  { before: '/images/gallery/sideyard-overgrown-before.jpg', after: '/images/gallery/sideyard-overgrown-after.jpg', title: 'Overgrown Side Yard Cleanup', tag: 'Yard Cleanup' },
+  { before: '/images/gallery/ac-sideyard-before.jpg', after: '/images/gallery/ac-sideyard-after.jpg', title: 'Side Yard Weed Removal', tag: 'Yard Cleanup' },
+  { before: '/images/gallery/leaf-cleanup-before.jpg', after: '/images/gallery/leaf-cleanup-after.jpg', title: 'Fall Leaf & Street Cleanup', tag: 'Leaf Cleanup' },
   { before: '/images/gallery/junk-pad-before.jpg', after: '/images/gallery/junk-pad-after.jpg', title: 'Backyard Junk Removal', tag: 'Junk Hauling' },
   { before: '/images/gallery/front-mulch-before.jpg', after: '/images/gallery/front-mulch-after.jpg', title: 'Front Yard Mulch & Cleanup', tag: 'Landscaping' },
   { before: '/images/gallery/side-mulch-before.jpg', after: '/images/gallery/side-mulch-after.jpg', title: 'Side Yard Mulch Install', tag: 'Landscaping' },
@@ -540,7 +547,10 @@ export default function HomePage() {
           <div className="blog-grid fade-in">
             {BLOG_POSTS.map((post) => (
               <Link key={post.href} href={post.href} className="blog-card">
-                <div className="blog-thumb">{post.category}</div>
+                <div className="blog-thumb" style={{ position: 'relative', padding: 0 }}>
+                  <img src={post.image} alt={post.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <span style={{ position: 'absolute', top: 12, left: 12, zIndex: 1, background: 'rgba(27,77,10,0.92)', color: '#fff', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.02em', padding: '5px 12px', borderRadius: 6 }}>{post.category}</span>
+                </div>
                 <div className="blog-body">
                   <div className="blog-category">{post.category}</div>
                   <h3>{post.title}</h3>
