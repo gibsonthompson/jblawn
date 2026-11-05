@@ -74,25 +74,25 @@ const TESTIMONIALS = [
   {
     text: "Our backyard needed serious work, and with a newborn at home we were completely overwhelmed. From the start JB was professional, kind, and responsive. His team communicated with us the entire time and pulled through even during multiple days of extreme weather, taking great care to be quiet and avoid any disruption for the baby. 10/10 service. I highly recommend them and will definitely hire again.",
     name: 'Shreya B.',
-    location: null,
+    location: 'Oakland, CA',
     initials: 'SB',
   },
   {
     text: "These guys are the real deal. I needed my yard cleaned up after years of garbage piling up and the grass, bushes, and weeds getting overgrown. They came out, gave me a fair price, and got to work. It was really hot but they got the job done. Definitely recommend!",
     name: 'Franklin M.',
-    location: null,
+    location: 'Hayward, CA',
     initials: 'FM',
   },
   {
     text: "I hired Jose to clean my front and back yard, which needed a lot of heavy lifting. Him and his employee did a fantastic job throughout all my yards and I'm very satisfied with his services. Thanks Jose and team!",
     name: 'Christopher R.',
-    location: null,
+    location: 'San Leandro, CA',
     initials: 'CR',
   },
   {
     text: "I hired JB to help clean up my grandma's back yard. It was a total jungle, but he did amazing, and we're now able to enjoy the backyard again. We even hired him to maintain it monthly. His prices are very reasonable. Thank you JB!",
     name: 'Marianna P.',
-    location: null,
+    location: 'Fremont, CA',
     initials: 'MP',
   },
   {
