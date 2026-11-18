@@ -25,7 +25,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-body), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-body, 'Plus Jakarta Sans'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', sans-serif;
   color: var(--black);
   background: var(--white);
   overflow-x: hidden;
@@ -83,7 +83,7 @@ body {
   margin: 0 auto;
 }
 .nav-logo img {
-  height: 52px;
+  height: 70px;
   width: auto;
 }
 .nav-links {
@@ -277,7 +277,7 @@ body {
   text-transform: uppercase;
 }
 .hero h1 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: clamp(2.4rem, 5vw, 3.6rem);
   line-height: 1.08;
   margin-bottom: 20px;
@@ -347,7 +347,7 @@ body {
   border-top: 1px solid rgba(255,255,255,0.12);
 }
 .hero-stat-value {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.8rem;
   color: var(--green-bright);
 }
@@ -485,7 +485,7 @@ body {
   border-radius: 2px;
 }
 .section-title {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   line-height: 1.12;
   letter-spacing: -0.02em;
@@ -691,7 +691,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.4rem;
   margin: 0 auto 20px;
   border: 5px solid var(--white);
@@ -882,7 +882,7 @@ body {
   background: rgba(245,214,35,0.08);
 }
 .trailer-price {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 2rem;
   color: var(--yellow);
   margin-bottom: 4px;
@@ -1017,7 +1017,7 @@ body {
   pointer-events: none;
 }
 .cta-banner h2 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   color: var(--white);
   margin-bottom: 16px;
@@ -1211,7 +1211,7 @@ body {
   align-items: flex-start;
 }
 .modal-header h2 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.5rem;
 }
 .modal-header p {
@@ -1425,7 +1425,7 @@ body {
   background: var(--green-bright);
 }
 .service-hero-h1 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: clamp(2rem, 4vw, 2.8rem);
   color: var(--white);
   line-height: 1.1;
@@ -1460,7 +1460,7 @@ body {
   margin-bottom: 36px;
 }
 .service-included h2 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.3rem;
   margin-bottom: 20px;
 }
@@ -1547,7 +1547,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.2rem;
   margin: 0 auto 16px;
   box-shadow: var(--shadow-sm);
@@ -1571,7 +1571,7 @@ body {
   align-items: center;
 }
 .service-pricing-content h2 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.5rem;
   margin-bottom: 16px;
 }
@@ -1680,7 +1680,7 @@ body {
   color: var(--gray-dark);
 }
 .blog-content h2 {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: var(--font-display, 'Archivo Black'), sans-serif;
   font-size: 1.5rem;
   color: var(--black);
   margin: 40px 0 16px;
