@@ -1,10 +1,126 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const DAYS_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 const TIME_SLOTS = ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM']
+const SERVICE_OPTIONS = [
+  'Lawn Mowing & Maintenance',
+  'Landscaping & Sod Installation',
+  'Junk Removal & Hauling',
+  'Yard Cleanup & Debris',
+  'Bush & Hedge Trimming',
+  'Mulching & Bed Care',
+  'Dump Trailer Rental',
+  'Other / Multiple Services',
+]
+
+function ServiceSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          width: '100%',
+          padding: '14px 16px',
+          border: `2px solid ${open ? 'var(--green-bright)' : 'var(--gray-light)'}`,
+          borderRadius: 'var(--radius-sm)',
+          fontFamily: 'inherit',
+          fontSize: '0.95rem',
+          background: 'var(--white)',
+          color: value ? 'var(--black)' : 'var(--gray-mid)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          cursor: 'pointer',
+          outline: 'none',
+          textAlign: 'left',
+          transition: 'border-color 0.2s ease',
+        }}
+      >
+        <span>{value || 'Select a service...'}</span>
+        <svg
+          width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+          style={{ flexShrink: 0, color: 'var(--gray-mid)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          role="listbox"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            right: 0,
+            zIndex: 30,
+            background: 'var(--white)',
+            border: '2px solid var(--gray-light)',
+            borderRadius: 'var(--radius-sm)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
+            padding: 6,
+            maxHeight: 264,
+            overflowY: 'auto',
+          }}
+        >
+          {SERVICE_OPTIONS.map((s) => {
+            const active = value === s
+            return (
+              <button
+                key={s}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => { onChange(s); setOpen(false) }}
+                onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(107,191,26,0.09)' }}
+                onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '11px 12px',
+                  border: 'none',
+                  borderRadius: 8,
+                  background: active ? 'rgba(107,191,26,0.14)' : 'transparent',
+                  color: active ? 'var(--green-mid)' : 'var(--gray-dark)',
+                  fontFamily: 'inherit',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {s}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function BookingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const now = new Date()
@@ -178,17 +294,7 @@ export default function BookingModal({ open, onClose }: { open: boolean; onClose
               </div>
               <div className="form-group">
                 <label>Service Needed *</label>
-                <select value={service} onChange={(e) => setService(e.target.value)}>
-                  <option value="">Select a service...</option>
-                  <option>Lawn Mowing &amp; Maintenance</option>
-                  <option>Landscaping &amp; Sod Installation</option>
-                  <option>Junk Removal &amp; Hauling</option>
-                  <option>Yard Cleanup &amp; Debris</option>
-                  <option>Bush &amp; Hedge Trimming</option>
-                  <option>Mulching &amp; Bed Care</option>
-                  <option>Dump Trailer Rental</option>
-                  <option>Other / Multiple Services</option>
-                </select>
+                <ServiceSelect value={service} onChange={setService} />
               </div>
               {isOther && (
                 <div className="form-group">
